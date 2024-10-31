@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>327</width>
+    <height>292</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Random Number</string>
+  </property>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>250</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>OK</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>30</y>
+     <width>251</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Default</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Normal Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Lognormal Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Weibull Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Standard_F Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Standard_T Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Binomial Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Poisson Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Exponential Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Uniform Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Chisquare Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Gamma</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Beta</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Cauchy Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Pareto Distribution</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>90</y>
+     <width>251</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Parameter2:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="lineEdit"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Parameter1:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Parameter3:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="lineEdit_2"/>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="lineEdit_3"/>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

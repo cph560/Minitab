@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GUI</class>
+ <widget class="QMainWindow" name="GUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>834</width>
+    <height>697</height>
+   </rect>
+  </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Test demo</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="dragEnabled">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>834</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuview">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionFull_Screen"/>
+    <addaction name="actionNormal"/>
+   </widget>
+   <widget class="QMenu" name="menuSet">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionperference"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionsearch"/>
+   </widget>
+   <widget class="QMenu" name="menuFormula">
+    <property name="title">
+     <string>Formula</string>
+    </property>
+    <addaction name="actionRandom_Int"/>
+   </widget>
+   <widget class="QMenu" name="menuMenu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuplot">
+    <property name="title">
+     <string>Plots</string>
+    </property>
+    <addaction name="action"/>
+    <addaction name="action_3"/>
+    <addaction name="action_4"/>
+    <addaction name="action_5"/>
+    <addaction name="action_6"/>
+    <addaction name="action_7"/>
+    <addaction name="actionProbability_Plot"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Statistic</string>
+    </property>
+    <widget class="QMenu" name="menuDOE">
+     <property name="title">
+      <string>DOE</string>
+     </property>
+     <addaction name="action_12"/>
+     <addaction name="action_13"/>
+    </widget>
+    <addaction name="action_T"/>
+    <addaction name="action_T_2"/>
+    <addaction name="action_T_3"/>
+    <addaction name="actionANOVA"/>
+    <addaction name="action_8"/>
+    <addaction name="action_9"/>
+    <addaction name="action_10"/>
+    <addaction name="action_11"/>
+    <addaction name="menuDOE"/>
+   </widget>
+   <widget class="QMenu" name="menuQuality_Tool">
+    <property name="title">
+     <string>Quality Tool</string>
+    </property>
+    <widget class="QMenu" name="menuControl_Chart">
+     <property name="title">
+      <string>Control Chart</string>
+     </property>
+     <addaction name="actionI_MR_Chart"/>
+     <addaction name="actionX_Bar_Chart"/>
+    </widget>
+    <addaction name="actionType_I_Gage_Study"/>
+    <addaction name="actionGage_R_R"/>
+    <addaction name="actionKAPPA_2"/>
+    <addaction name="actionProcess_Capability_Analysis"/>
+    <addaction name="menuControl_Chart"/>
+   </widget>
+   <addaction name="menuMenu"/>
+   <addaction name="menuFormula"/>
+   <addaction name="menuplot"/>
+   <addaction name="menu"/>
+   <addaction name="menuQuality_Tool"/>
+   <addaction name="menuview"/>
+   <addaction name="menuSet"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>`</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save       Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionFull_Screen">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Full Screen</string>
+   </property>
+  </action>
+  <action name="actionNormal">
+   <property name="text">
+    <string>Normal</string>
+   </property>
+  </action>
+  <action name="actionperference">
+   <property name="text">
+    <string>Perference</string>
+   </property>
+  </action>
+  <action name="actionPID">
+   <property name="text">
+    <string>PID</string>
+   </property>
+  </action>
+  <action name="actionPareto">
+   <property name="text">
+    <string>Pareto</string>
+   </property>
+  </action>
+  <action name="actionsearch">
+   <property name="text">
+    <string>Search</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>Time Series Plot</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>控制图</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>Scatter Plot</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Histogram</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Pareto Chart</string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>Individual Plot</string>
+   </property>
+  </action>
+  <action name="action_7">
+   <property name="text">
+    <string>Box Plot</string>
+   </property>
+  </action>
+  <action name="actionKAPPA">
+   <property name="text">
+    <string>KAPPA</string>
+   </property>
+  </action>
+  <action name="action_T">
+   <property name="text">
+    <string>1 Sample T Test</string>
+   </property>
+  </action>
+  <action name="action_T_2">
+   <property name="text">
+    <string>2 Sample T Test</string>
+   </property>
+  </action>
+  <action name="action_T_3">
+   <property name="text">
+    <string>Paired T Test</string>
+   </property>
+  </action>
+  <action name="actionANOVA">
+   <property name="text">
+    <string>ANOVA</string>
+   </property>
+  </action>
+  <action name="action_8">
+   <property name="text">
+    <string>Chi-SQ Test</string>
+   </property>
+  </action>
+  <action name="action_9">
+   <property name="text">
+    <string>2 Variances Test</string>
+   </property>
+  </action>
+  <action name="action_10">
+   <property name="text">
+    <string>Simple Linear Regression</string>
+   </property>
+  </action>
+  <action name="action_11">
+   <property name="text">
+    <string>Regression</string>
+   </property>
+  </action>
+  <action name="action_12">
+   <property name="text">
+    <string>Full Factorial</string>
+   </property>
+  </action>
+  <action name="action_13">
+   <property name="text">
+    <string>Partial Factorial</string>
+   </property>
+  </action>
+  <action name="actionType_I_Gage_Study">
+   <property name="text">
+    <string>Type I Gage Study</string>
+   </property>
+  </action>
+  <action name="actionGage_R_R">
+   <property name="text">
+    <string>Gage R&amp;&amp;R</string>
+   </property>
+  </action>
+  <action name="actionKAPPA_2">
+   <property name="text">
+    <string>KAPPA</string>
+   </property>
+  </action>
+  <action name="actionProcess_Capability_Analysis">
+   <property name="text">
+    <string>Process Capability Analysis</string>
+   </property>
+  </action>
+  <action name="actionI_MR_Chart">
+   <property name="text">
+    <string>I-MR Chart</string>
+   </property>
+  </action>
+  <action name="actionX_Bar_Chart">
+   <property name="text">
+    <string>X-Bar R Chart</string>
+   </property>
+  </action>
+  <action name="actionProbability_Plot">
+   <property name="text">
+    <string>Probability Plot </string>
+   </property>
+  </action>
+  <action name="actionRandom_Int">
+   <property name="text">
+    <string>Random Int</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionFull_Screen</sender>
+   <signal>triggered()</signal>
+   <receiver>GUI</receiver>
+   <slot>showMaximized()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>305</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNormal</sender>
+   <signal>triggered()</signal>
+   <receiver>GUI</receiver>
+   <slot>showNormal()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>305</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
