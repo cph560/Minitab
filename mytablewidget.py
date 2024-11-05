@@ -61,6 +61,7 @@ class MyTableWidget(QtWidgets.QTableWidget):
             ls1 = []
             for row in ls:
                 ls1.append(row.split('\t'))
+            print(ls1)
             rows = len(ls)
             columns = len(ls1[0])
             for row in range(rows):
@@ -272,6 +273,27 @@ class MyTableWidget(QtWidgets.QTableWidget):
     def Delete(self):
         self.del_tb_text()
     
+    #新建random列
+    def random_col(self,name = "c1", data = []):
+
+        c = self.columnCount()
+        try:
+            col = int(name.lower().strip("c "))-1
+        except:
+            for j in range(c): 
+                if self.horizontalHeaderItem(j).text() == name:
+                    col = j
+                    break
+
+        r = self.rowCount()
+        if len(data)>r:
+            self.setRowCount(r+len(data))
+
+        for i in range(len(data)):
+            item = QTableWidgetItem()
+            item.setText(str(data[i]))
+            self.setItem(i, col, item)
+
     def showMenu(self, pos):
         # pos 鼠标位置
         # 菜单显示前,将它移动到鼠标点击的位置

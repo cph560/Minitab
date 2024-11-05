@@ -1,5 +1,6 @@
 # coding=gbk
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import *
 import sys
 
 #自定义Widget
@@ -186,10 +187,10 @@ class Ui_GUI(object):
 
         #以下是添加项（连接Function)
         self.actionKAPPA_2.triggered.connect(self.clear) 
+        self.actionRandom_Int.triggered.connect(self.random_int) 
         self.action_5.triggered.connect(self.Pareto) 
         self.action_6.triggered.connect(self.Indiviplt)
         self.action_7.triggered.connect(self.boxplt)
-    
     #修改名字
     #除#可修改项以外均为QtDesigner生成                               
     def retranslateUi(self, GUI):
@@ -255,15 +256,32 @@ class Ui_GUI(object):
         self.tableWidget = MyTableWidget(self.centralwidget)
         # 设置控件对象名称
         self.tableWidget.setObjectName("tableWidget")
-        # 设置列数
-        self.tableWidget.setColumnCount(10)
-        # 设置行数
-        self.tableWidget.setRowCount(10)
+        # # 设置列数
+        # self.tableWidget.setColumnCount(10)
+        # # 设置行数
+        # self.tableWidget.setRowCount(10)
         # 将控件添加到布局中
         self.horizontalLayout.addWidget(self.tableWidget)
         
         # 设置主窗口的中央控件
         self.GUI.setCentralWidget(self.centralwidget)
+    # 随机数接口
+    def random_int(self):
+        from Random import Random_interface
+        
+        interface = Random_interface()
+        interface.random_res.connect(self.update_random)
+        if interface.exec_() == QDialog.Accepted:
+            print(interface.results)
+            self.update_random(interface.col_name, result=interface.results)
+        
+
+    def update_random(self, name= "c1", result=[]):
+        
+        result = [float(i) for i in result]
+        name_list = name.split()
+        for i in range(len(name_list)):
+            self.tableWidget.random_col(name_list[i], result)
 
     # Pareto图接口
     def Pareto(self):
