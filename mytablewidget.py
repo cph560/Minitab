@@ -247,26 +247,32 @@ class MyTableWidget(QtWidgets.QTableWidget):
             return ''
     
     #数据传输
-    def transfer_data(self): #已更新数据传输
+    def transfer_data(self):
+        #1106 Yedi 更新传输至新框架
+        # 已更新数据传输
         try:
             row_num = self.rowCount()
             col_num = self.columnCount()
             col_set = []
             for i in range(col_num): # 遍历每个列有无空列
-                if self.item(0, i).text() == "":
+                if self.item(1, i).text() == "":
                     continue
                 else:
                     
                     if not self.horizontalHeaderItem(i):
                         col_set.append([i+1, i])
                     else:
-                        col_set.append([self.horizontalHeaderItem(i).text(), i]) #【列名，列位置】
+                        title=self.item(0, i).text()
+                        if title=="":
+                            col_set.append([self.horizontalHeaderItem(i).text(), i])  # 【列名，列位置】
+                        else:
+                            col_set.append([title, i]) #【列名，列位置】
             
             col_item_set = {}
             for item in col_set: # 遍历每个有内容行
                 if str(item[0]) not in col_item_set:
                     col_item_set[str(item[0])] = []
-                for i in range(row_num):
+                for i in range(1,row_num):
                     if self.item(i, item[1]).text()== '':
                         break
                     else:
@@ -274,7 +280,7 @@ class MyTableWidget(QtWidgets.QTableWidget):
                         col_item_set[str(item[0])].append(self.item(i,item[1]).text())
             
 
-            print(col_item_set) # Example {'C1': ['123', '24', '251'], 'C2': ['125', '16', '216']}
+            # print(col_item_set) # Example {'C1': ['123', '24', '251'], 'C2': ['125', '16', '216']}
             return col_item_set
 
         except Exception as e:
@@ -298,7 +304,9 @@ class MyTableWidget(QtWidgets.QTableWidget):
         # pos 鼠标位置
         # 菜单显示前,将它移动到鼠标点击的位置
         self.contextMenu.exec_(QCursor.pos())  # 在鼠标位置显示
- 
+
+
+
     def keyPressEvent(self, event):  # 重写键盘监听事件
         # 监听 CTRL+C 组合键，实现复制数据到粘贴板
         if (event.key() == Qt.Key_C) and QApplication.keyboardModifiers() == Qt.ControlModifier:
@@ -313,3 +321,23 @@ class MyTableWidget(QtWidgets.QTableWidget):
         #     self.paste()
         else:
             super().keyPressEvent(event)
+
+    def random_col(self, name="C1", data=[]):
+
+        c = self.columnCount()
+        try:
+            col = int(name.lower().strip("c ")) - 1
+        except:
+            for j in range(c):
+                if self.horizontalHeaderItem(j).text() == name:
+                    col = j
+                    break
+
+        r = self.rowCount()-1
+        if len(data) > r:
+            self.setRowCount(len(data)+1)
+
+        for i in range(len(data)):
+            item = QTableWidgetItem()
+            item.setText(str(data[i]))
+            self.setItem(i+1, col, item)

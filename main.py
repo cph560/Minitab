@@ -10,7 +10,8 @@ from mytablewidget import MyTableWidget
 from PyQt5.Qt import QTableWidgetItem
 from designer import Ui_GUI
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItemModel, QStandardItem,QColor, QBrush
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor, QBrush
+from PyQt5.QtWidgets import *
 import random
 import re
 import time
@@ -19,22 +20,20 @@ from PyQt5.QtWidgets import QMessageBox
 
 #主函数
 #除#可修改项以外均为QtDesigner生成
-class Ui_GUI(Ui_GUI):
+class Ui_Main(Ui_GUI):
     def __init__(self):
-        self.windows=[]
+        self.windows = []
+
     def setupUi(self, GUI):
         super().setupUi(GUI)
-        self.Row_Count = 5000#可修改项
-        self.Col_Count = 25#可修改项
-        self.GUI = GUI #可修改项
-        self.centralwidget = QtWidgets.QWidget(GUI)
-        self.centralwidget.setObjectName("centralwidget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.tableWidget = MyTableWidget(self.centralwidget) #可修改项
+        Row_Count = 5000  #可修改项
+        Col_Count = 25  #可修改项
+        self.GUI = GUI  #可修改项
+
+        self.tableWidget = MyTableWidget(self.centralwidget)  #可修改项
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(self.Col_Count)  # 修改项
-        self.tableWidget.setRowCount(self.Row_Count + 1)  # 修改项
+        self.tableWidget.setColumnCount(Col_Count)  # 修改项
+        self.tableWidget.setRowCount(Row_Count + 1)  # 修改项
         GUI.setCentralWidget(self.tableWidget)
 
         GUI.setObjectName("GUI")
@@ -44,12 +43,7 @@ class Ui_GUI(Ui_GUI):
 
         ################################
         '''修改行名列名'''
-        _translate = QtCore.QCoreApplication.translate
-        Column_List = ["C" + str(x) for x in range(1, self.Col_Count + 1)]
-        Row_List = [str(x) for x in range(1, self.Row_Count + 1)]
-        Row_List.insert(0, "Title")
-        self.tableWidget.setHorizontalHeaderLabels(Column_List)
-        self.tableWidget.setVerticalHeaderLabels(Row_List)
+        self.reset_col_row_name()
 
         col_num = self.tableWidget.columnCount()
         row_num = self.tableWidget.rowCount()
@@ -61,15 +55,15 @@ class Ui_GUI(Ui_GUI):
         color = Qt.lightGray
         for i in range(row_num):
             for j in range(col_num):
-                if i==0:
-                    item =ColorDelegate(color)
+                if i == 0:
+                    item = ColorDelegate(color)
                 else:
                     item = QTableWidgetItem()
                 item.setText("")
                 self.tableWidget.setItem(i, j, item)
-        ################################
-        self.tableWidget.init='yes'
-        self.actionKAPPA_2.triggered.connect(self.clear)
+        ###############################
+        self.tableWidget.init = 'yes'
+        # self.actionKAPPA_2.triggered.connect(self.clear)
         self.action_5.triggered.connect(self.Pareto)
         self.action_6.triggered.connect(self.Indiviplt)
         self.action_7.triggered.connect(self.boxplt)
@@ -77,30 +71,92 @@ class Ui_GUI(Ui_GUI):
         self.action_3.triggered.connect(self.Scatter_plt)
         self.action_4.triggered.connect(self.Histogram_plt)
         self.actionsearch.triggered.connect(self.set_random_data)
+        self.actionRandom_Int.triggered.connect(self.random_int)
+        self.actionNew.triggered.connect(self.resize_setting)
+    def resize_setting(self):
+        #没做窗口，目前是默认值
+        newRowCount=10
+        newColumnCount=10
+        self.rebuild(newRowCount+1,newColumnCount)
+        pass
+    def reset_col_row_name(self):
+        col_num = self.tableWidget.columnCount()
+        row_num = self.tableWidget.rowCount()
+        Column_List = ["C" + str(x) for x in range(1, col_num + 1)]
+        Row_List = [str(x) for x in range(1, row_num + 1)]
+        Row_List.insert(0, "Title")
+        self.tableWidget.setHorizontalHeaderLabels(Column_List)
+        self.tableWidget.setVerticalHeaderLabels(Row_List)
 
+    # def clear(self):
+    #     # 移除tableWidget控件
+    #     self.horizontalLayout.removeWidget(self.tableWidget)
+    #     # 删除tableWidget控件
+    #     del self.tableWidget
+    #
+    #     # 创建新的tableWidget控件
+    #     self.tableWidget = MyTableWidget(self.centralwidget)
+    #     # 设置控件对象名称
+    #     self.tableWidget.setObjectName("tableWidget")
+    #     # 设置列数
+    #     self.tableWidget.setColumnCount(10)
+    #     # 设置行数
+    #     self.tableWidget.setRowCount(10)
+    #     # 将控件添加到布局中
+    #     self.horizontalLayout.addWidget(self.tableWidget)
+    #
+    #     # 设置主窗口的中央控件
+    #     self.GUI.setCentralWidget(self.centralwidget)
+    #
+    #     self.reset_col_row_name()
+    def rebuild(self,newRowCount,newColumnCount):
+        self.tableWidget.init = 'no'
+        self.tableWidget.clearContents()
+        self.tableWidget.setRowCount(newRowCount)
+        self.tableWidget.setColumnCount(newColumnCount)
+        color = Qt.lightGray
+        col_num = self.tableWidget.columnCount()
+        row_num = self.tableWidget.rowCount()
+        for i in range(row_num):
+            for j in range(col_num):
+                if i == 0:
+                    item = ColorDelegate(color)
+                else:
+                    item = QTableWidgetItem()
+                item.setText("")
+                self.tableWidget.setItem(i, j, item)
+        self.reset_col_row_name()
+        self.tableWidget.init = 'yes'
 
-#----------------------------------------------------------------以下自定义项 Example
-    #清空
-    def clear(self):
-        # 移除tableWidget控件
-        self.horizontalLayout.removeWidget(self.tableWidget)
-        # 删除tableWidget控件
-        del self.tableWidget
-        
-        
-        # 创建新的tableWidget控件
-        self.tableWidget = MyTableWidget(self.centralwidget)
-        # 设置控件对象名称
-        self.tableWidget.setObjectName("tableWidget")
-        # 设置列数
-        self.tableWidget.setColumnCount(10)
-        # 设置行数
-        self.tableWidget.setRowCount(10)
-        # 将控件添加到布局中
-        self.horizontalLayout.addWidget(self.tableWidget)
-        
-        # 设置主窗口的中央控件
-        self.GUI.setCentralWidget(self.centralwidget)
+    # 随机数接口
+    def random_int(self):
+        from Random import Random_interface
+        interface = Random_interface()
+        interface.random_res.connect(self.update_random)
+        if interface.exec_() == QDialog.Accepted:
+            print(interface.results)
+            self.update_random(interface.col_name, result=interface.results)
+
+    def adjust_column_width(self):
+        #自动调整列宽，并维持列宽在设定最小值之上
+        min_column_width = 100
+        for column in range(self.tableWidget.columnCount()):
+            print(self.tableWidget.columnWidth(column))
+            self.tableWidget.resizeColumnToContents(column)
+            if self.tableWidget.columnWidth(column) < min_column_width:
+                self.tableWidget.setColumnWidth(column, min_column_width)
+    def update_random(self, name="C1", result=[]):
+        #默认名不生效，暂未排查原因
+        if name == "":
+            name = "C1"
+        #以上为临时解决方案
+        result = [float(i) for i in result]
+        name_list = name.split()
+        for i in range(len(name_list)):
+            self.tableWidget.random_col(name_list[i], result)
+        self.reset_col_row_name()
+        self.adjust_column_width()
+
     def get_table_data(self):
         #保存编辑中的位置数据
         try:
@@ -115,10 +171,9 @@ class Ui_GUI(Ui_GUI):
         except:
             pass
 
-
         # 获取表格数据
         data = []
-        for row in range(1,self.tableWidget.rowCount()):
+        for row in range(1, self.tableWidget.rowCount()):
             rowData = []
             for column in range(self.tableWidget.columnCount()):
                 item = self.tableWidget.item(row, column)
@@ -139,8 +194,8 @@ class Ui_GUI(Ui_GUI):
         for i in range(self.tableWidget.columnCount()):
             if self.tableWidget.horizontalHeaderItem(i) is not None:
                 column_title = self.tableWidget.horizontalHeaderItem(i).text()
-                if self.tableWidget.item(0, i) is not None and self.tableWidget.item(0, i).text()!='':
-                    column_title="%s"%self.tableWidget.item(0, i).text()
+                if self.tableWidget.item(0, i) is not None and self.tableWidget.item(0, i).text() != '':
+                    column_title = "%s" % self.tableWidget.item(0, i).text()
                 title.append(column_title)
             else:
                 title.append(str(i + 1))
@@ -153,23 +208,24 @@ class Ui_GUI(Ui_GUI):
         df = df.dropna(axis=1, how='all')
         # df=df.fillna('')  #填充nan
         return df
+
     # Pareto图接口
-    def is_number(self,s):
+    def is_number(self, s):
         pattern = r'^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$'
         return re.match(pattern, s) is not None
 
-
     def set_random_data(self):
-        for i in range(1,60):
+        for i in range(1, 60):
             for j in range(8):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(random.randint(0, 20))))
-        for i in range(63,90):
+        for i in range(63, 90):
             for j in range(5):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(random.randint(0, 20))))
+
     def Time_serires_plt(self):
         # 结束编辑状态
         from Time_series_plot import Time_series_plot
-        table_data=self.get_table_data()
+        table_data = self.get_table_data()
         pl = Time_series_plot(table_data)
         self.windows.append(pl)
 
@@ -184,17 +240,18 @@ class Ui_GUI(Ui_GUI):
         table_data = self.get_table_data()
         pl = Histogram_plot(table_data)
         self.windows.append(pl)
+
     def Pareto(self):
         from Plot_interface import Ui_Plot_interface
         pareto_data = self.tableWidget.transfer_data()
         interface = Ui_Plot_interface('Pareto', pareto_data)
         interface.exec_()
-    
+
     # Individual图接口
     def Indiviplt(self):
         from Plot_interface import Ui_Plot_interface
         Individual_data = self.tableWidget.transfer_data()
-        
+
         interface = Ui_Plot_interface('Individual', Individual_data)
         interface.exec_()
 
@@ -202,7 +259,6 @@ class Ui_GUI(Ui_GUI):
     def boxplt(self):
         from Plot_interface import Ui_Plot_interface
         box_data = self.tableWidget.transfer_data()
-        
         interface = Ui_Plot_interface('box', box_data)
         interface.exec_()
 
@@ -213,15 +269,11 @@ class ColorDelegate(QTableWidgetItem):
         self.setBackground(QBrush(color))
 
 
-
-
-
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_GUI()
+    ui = Ui_Main()
     ui.setupUi(MainWindow)
     MainWindow.show()
 
     sys.exit(app.exec_())
-
