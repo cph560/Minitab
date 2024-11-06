@@ -31,10 +31,33 @@ class MyTableWidget(QtWidgets.QTableWidget):
         self.ADD_col.triggered.connect(self.ADD_COL)
         self.ADD_row.triggered.connect(self.ADD_ROW)
         self.CT.triggered.connect(self.changeColName)
-        
+        self.itemChanged.connect(self.on_item_changed)
+        self.init='no'
+    def on_item_changed(self, item):
+        if self.init=='yes':
+            self.fill_above_with_zeros(item)
+
+    def fill_above_with_zeros(self,item):
+        row = item.row()
+        column = item.column()
+        value = item.text()
+
+        # 检查输入的值是否为数字
+        if value.isdigit():
+            pass  # 转换为整数
+        # 填充上方所有列中的空值为0
+        for r in range(row - 1, 0, -1):
+            upper_item = self.item(r, column)
+            if upper_item is None or upper_item.text() == "":
+                self.setItem(r, column, QTableWidgetItem("0"))
+        else:
+            return  # 如果不是数字，不执行填充操作
+
 
     #删除Table Text
     def del_tb_text(self):
+        temp=self.init
+        self.init = 'no'
         try:
             indexes = self.selectedIndexes()
             
@@ -45,7 +68,10 @@ class MyTableWidget(QtWidgets.QTableWidget):
                 self.setItem(row, column, item)
         except BaseException as e:
             print(e)
+            self.init = temp
             return
+        finally:
+            self.init = temp
         
     #粘贴Table Text
     def paste_tb_text(self):
@@ -223,14 +249,11 @@ class MyTableWidget(QtWidgets.QTableWidget):
     #数据传输
     def transfer_data(self): #已更新数据传输
         try:
-            
             row_num = self.rowCount()
             col_num = self.columnCount()
             col_set = []
             for i in range(col_num): # 遍历每个列有无空列
-                
                 if self.item(0, i).text() == "":
-                    
                     continue
                 else:
                     
@@ -244,8 +267,6 @@ class MyTableWidget(QtWidgets.QTableWidget):
                 if str(item[0]) not in col_item_set:
                     col_item_set[str(item[0])] = []
                 for i in range(row_num):
-                    
-                
                     if self.item(i, item[1]).text()== '':
                         break
                     else:
@@ -255,6 +276,7 @@ class MyTableWidget(QtWidgets.QTableWidget):
 
             print(col_item_set) # Example {'C1': ['123', '24', '251'], 'C2': ['125', '16', '216']}
             return col_item_set
+
         except Exception as e:
             print(e)
             return ''
@@ -285,7 +307,9 @@ class MyTableWidget(QtWidgets.QTableWidget):
             self.cut()
         elif (event.key() == Qt.Key_V) and QApplication.keyboardModifiers() == Qt.ControlModifier:
             self.paste()
-        elif (event.key() == Qt.Key_Z) and QApplication.keyboardModifiers() == Qt.ControlModifier:
-            self.paste()
+        elif(event.key() == Qt.Key_Delete):
+            self.Delete()
+        # elif (event.key() == Qt.Key_Z) and QApplication.keyboardModifiers() == Qt.ControlModifier:
+        #     self.paste()
         else:
             super().keyPressEvent(event)
