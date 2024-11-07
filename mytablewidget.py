@@ -31,10 +31,33 @@ class MyTableWidget(QtWidgets.QTableWidget):
         self.ADD_col.triggered.connect(self.ADD_COL)
         self.ADD_row.triggered.connect(self.ADD_ROW)
         self.CT.triggered.connect(self.changeColName)
-        
+        self.itemChanged.connect(self.on_item_changed)
+        self.init='no'
+    def on_item_changed(self, item):
+        if self.init=='yes':
+            self.fill_above_with_zeros(item)
+
+    def fill_above_with_zeros(self,item):
+        row = item.row()
+        column = item.column()
+        value = item.text()
+
+        # 检查输入的值是否为数字
+        if value.isdigit():
+            pass  # 转换为整数
+        # 填充上方所有列中的空值为0
+        for r in range(row - 1, 0, -1):
+            upper_item = self.item(r, column)
+            if upper_item is None or upper_item.text() == "":
+                self.setItem(r, column, QTableWidgetItem("0"))
+        else:
+            return  # 如果不是数字，不执行填充操作
+
 
     #删除Table Text
     def del_tb_text(self):
+        temp=self.init
+        self.init = 'no'
         try:
             indexes = self.selectedIndexes()
             
@@ -45,7 +68,10 @@ class MyTableWidget(QtWidgets.QTableWidget):
                 self.setItem(row, column, item)
         except BaseException as e:
             print(e)
+            self.init = temp
             return
+        finally:
+            self.init = temp
         
     #粘贴Table Text
     def paste_tb_text(self):
@@ -61,7 +87,6 @@ class MyTableWidget(QtWidgets.QTableWidget):
             ls1 = []
             for row in ls:
                 ls1.append(row.split('\t'))
-            print(ls1)
             rows = len(ls)
             columns = len(ls1[0])
             for row in range(rows):
@@ -222,31 +247,32 @@ class MyTableWidget(QtWidgets.QTableWidget):
             return ''
     
     #数据传输
-    def transfer_data(self): #已更新数据传输
+    def transfer_data(self):
+        #1106 Yedi 更新传输至新框架
+        # 已更新数据传输
         try:
-            
             row_num = self.rowCount()
             col_num = self.columnCount()
             col_set = []
             for i in range(col_num): # 遍历每个列有无空列
-                
-                if self.item(0, i).text() == "":
-                    
+                if self.item(1, i).text() == "":
                     continue
                 else:
                     
                     if not self.horizontalHeaderItem(i):
                         col_set.append([i+1, i])
                     else:
-                        col_set.append([self.horizontalHeaderItem(i).text(), i]) #【列名，列位置】
+                        title=self.item(0, i).text()
+                        if title=="":
+                            col_set.append([self.horizontalHeaderItem(i).text(), i])  # 【列名，列位置】
+                        else:
+                            col_set.append([title, i]) #【列名，列位置】
             
             col_item_set = {}
             for item in col_set: # 遍历每个有内容行
                 if str(item[0]) not in col_item_set:
                     col_item_set[str(item[0])] = []
-                for i in range(row_num):
-                    
-                
+                for i in range(1,row_num):
                     if self.item(i, item[1]).text()== '':
                         break
                     else:
@@ -254,8 +280,9 @@ class MyTableWidget(QtWidgets.QTableWidget):
                         col_item_set[str(item[0])].append(self.item(i,item[1]).text())
             
 
-            print(col_item_set) # Example {'C1': ['123', '24', '251'], 'C2': ['125', '16', '216']}
+            # print(col_item_set) # Example {'C1': ['123', '24', '251'], 'C2': ['125', '16', '216']}
             return col_item_set
+
         except Exception as e:
             print(e)
             return ''
@@ -273,32 +300,13 @@ class MyTableWidget(QtWidgets.QTableWidget):
     def Delete(self):
         self.del_tb_text()
     
-    #新建random列
-    def random_col(self,name = "c1", data = []):
-
-        c = self.columnCount()
-        try:
-            col = int(name.lower().strip("c "))-1
-        except:
-            for j in range(c): 
-                if self.horizontalHeaderItem(j).text() == name:
-                    col = j
-                    break
-
-        r = self.rowCount()
-        if len(data)>r:
-            self.setRowCount(r+len(data))
-
-        for i in range(len(data)):
-            item = QTableWidgetItem()
-            item.setText(str(data[i]))
-            self.setItem(i, col, item)
-
     def showMenu(self, pos):
         # pos 鼠标位置
         # 菜单显示前,将它移动到鼠标点击的位置
         self.contextMenu.exec_(QCursor.pos())  # 在鼠标位置显示
- 
+
+
+
     def keyPressEvent(self, event):  # 重写键盘监听事件
         # 监听 CTRL+C 组合键，实现复制数据到粘贴板
         if (event.key() == Qt.Key_C) and QApplication.keyboardModifiers() == Qt.ControlModifier:
@@ -307,7 +315,29 @@ class MyTableWidget(QtWidgets.QTableWidget):
             self.cut()
         elif (event.key() == Qt.Key_V) and QApplication.keyboardModifiers() == Qt.ControlModifier:
             self.paste()
-        elif (event.key() == Qt.Key_Z) and QApplication.keyboardModifiers() == Qt.ControlModifier:
-            self.paste()
+        elif(event.key() == Qt.Key_Delete):
+            self.Delete()
+        # elif (event.key() == Qt.Key_Z) and QApplication.keyboardModifiers() == Qt.ControlModifier:
+        #     self.paste()
         else:
             super().keyPressEvent(event)
+
+    def random_col(self, name="C1", data=[]):
+
+        c = self.columnCount()
+        try:
+            col = int(name.lower().strip("c ")) - 1
+        except:
+            for j in range(c):
+                if self.horizontalHeaderItem(j).text() == name:
+                    col = j
+                    break
+
+        r = self.rowCount()-1
+        if len(data) > r:
+            self.setRowCount(len(data)+1)
+
+        for i in range(len(data)):
+            item = QTableWidgetItem()
+            item.setText(str(data[i]))
+            self.setItem(i+1, col, item)
