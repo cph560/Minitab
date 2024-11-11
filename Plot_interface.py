@@ -165,34 +165,39 @@ class Ui_Plot_interface(QDialog):
         if self.toolBox.currentIndex() == 1:
             self.plot_pareto_by_freq()
             return ''
-        
         try:
-            item = self.input_Data[self.comboBox.currentText()]
-            data = self.input_Data[self.comboBox_2.currentText()]
-        except:
-            item = self.input_Data[int(self.comboBox.currentText())]
-            data = self.input_Data[int(self.comboBox_2.currentText())]
+            try:
+                item = self.input_Data[self.comboBox.currentText()]
+                data = self.input_Data[self.comboBox_2.currentText()]
+            except:
+                item = self.input_Data[int(self.comboBox.currentText())]
+                data = self.input_Data[int(self.comboBox_2.currentText())]
 
-        length = len(item) if len(item)<len(data) else len(data)
-        new_Set = set()
-        new_data = {}
-        for it in item:
-            new_Set.add(it)
+            length = len(item) if len(item)<len(data) else len(data)
+            new_Set = set()
+            new_data = {}
+            for it in item:
+                new_Set.add(it)
 
-        if len(new_Set)==len(item):
-            Pareto = Paretoplt([int(i) for i in data], item)
-            Pareto.exec_()
-        else:
-            for i in range(length):
-                if item[i] not in new_data:
-                    new_data[item[i]] = int(data[i])
-                else:
-                    new_data[item[i]]+=int(data[i])
-            # print(new_data.items(), new_data.keys())
-            Pareto = Paretoplt([i for _, i in new_data.items()], [k for k, _ in new_data.items()])
-            Pareto.exec_()
-
-
+            #如有相同item，则合并data
+            if len(new_Set)==len(item):
+                Pareto = Paretoplt([float(i) for i in data], item)
+                Pareto.exec_()
+            else:
+                for i in range(length):
+                    if item[i] not in new_data:
+                        new_data[item[i]] = float(data[i])
+                    else:
+                        new_data[item[i]]+=float(data[i])
+                # print(new_data.items(), new_data.keys())
+                Pareto = Paretoplt([i for _, i in new_data.items()], [k for k, _ in new_data.items()])
+                Pareto.exec_()
+            self.closeall()
+        except Exception as e:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.setWindowTitle("Error")
+            error_dialog.showMessage(str(e))
+            error_dialog.exec_()
 
     #画频率Pareto 图
     def plot_pareto_by_freq(self):
@@ -201,24 +206,30 @@ class Ui_Plot_interface(QDialog):
         item_set = set()
         data_sets = []
         item_sets = []
-        for key in text.split():
-            item = self.input_Data[key]
-            for it in item:
-                item_set.add(it)
-            item_sets.append([i for i in item_set])
-            data = []
-            for i in item_set:
-                data.append(item.count(i))
-            data_sets.append(data)
-            item_set = set()
-        # print(data_sets, item_sets)
+        try:
+            for key in text.split():
+                item = self.input_Data[key]
+                for it in item:
+                    item_set.add(it)
+                item_sets.append([i for i in item_set])
+                data = []
+                for i in item_set:
+                    data.append(item.count(i))
+                data_sets.append(data)
+                item_set = set()
+            # print(data_sets, item_sets)
 
-        for i in range(len(data_sets)):
+            for i in range(len(data_sets)):
 
-            Pareto = Paretoplt(data_sets[i], item_sets[i])
-            Pareto.exec_()
+                Pareto = Paretoplt(data_sets[i], item_sets[i])
+                Pareto.exec_()
+            self.closeall()
+        except Exception as e:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.setWindowTitle("Error")
+            error_dialog.showMessage(str(e))
+            error_dialog.exec_()
 
-    
     def Individual_p(self):
 
         ###对交换界面按钮进行修改
@@ -256,7 +267,7 @@ class Ui_Plot_interface(QDialog):
         self.clear_btn.clicked.connect(self.clear)
         self.clear_btn2.clicked.connect(self.clear)
         self.buttonBox.accepted.connect(self.plot_Individual) # type: ignore
-    
+        
 
     def plot_Individual(self):
         from Individual import Indiviplt 
@@ -270,7 +281,7 @@ class Ui_Plot_interface(QDialog):
             if not text_page2 or text_page2 == '':
                 for key in text.split():
                     item.append(str(key))
-                    data.append([int(i) for i in self.input_Data[key]])
+                    data.append([float(i) for i in self.input_Data[key]])
                 # print(item)
                 Indivi = Indiviplt(data, item)
                 Indivi.exec_()
@@ -291,14 +302,14 @@ class Ui_Plot_interface(QDialog):
                             else:
                                 title += '-'+self.input_Data[keys[i]][da]
                         if title not in data_set:
-                            data_set[title] = [int(self.input_Data[key1[plot]][da])]
+                            data_set[title] = [float(self.input_Data[key1[plot]][da])]
                         else:
-                            data_set[title].append(int(self.input_Data[key1[plot]][da]))
+                            data_set[title].append(float(self.input_Data[key1[plot]][da]))
                     data_page2 = [data_set[title] for title in data_set.keys()]
                     item_page2 = [title for title in data_set.keys()]
                     Indivi = Indiviplt(data_page2, item_page2)
                     Indivi.exec_()
-
+            self.closeall()
         except Exception as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
@@ -355,7 +366,7 @@ class Ui_Plot_interface(QDialog):
             if not text_page2 or text_page2 == '':
                 for key in text.split():
                     item.append(str(key))
-                    data.append([int(i) for i in self.input_Data[key]])
+                    data.append([float(i) for i in self.input_Data[key]])
                 # print(item)
                 boxp = boxplt(data, item)
                 boxp.exec_()
@@ -376,14 +387,14 @@ class Ui_Plot_interface(QDialog):
                             else:
                                 title += '-'+self.input_Data[keys[i]][da]
                         if title not in data_set:
-                            data_set[title] = [int(self.input_Data[key1[plot]][da])]
+                            data_set[title] = [float(self.input_Data[key1[plot]][da])]
                         else:
-                            data_set[title].append(int(self.input_Data[key1[plot]][da]))
+                            data_set[title].append(float(self.input_Data[key1[plot]][da]))
                     data_page2 = [data_set[title] for title in data_set.keys()]
                     item_page2 = [title for title in data_set.keys()]
                     boxp = boxplt(data_page2, item_page2)
                     boxp.exec_()
-
+            self.closeall()
         except Exception as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
@@ -453,7 +464,10 @@ class Ui_Plot_interface(QDialog):
                     self.text_input2.setText(" ".join(selected_texts))
             except:
                 pass
-
+    def closeall(self):
+        self.done(0)
+        self.close()
+        # self.canvas.close()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

@@ -249,6 +249,22 @@ class MyTableWidget(QtWidgets.QTableWidget):
     #数据传输
     def transfer_data(self):
         #1106 Yedi 更新传输至新框架
+
+        try:
+            current_row = self.tableWidget.selectedItems()[0].row()
+            current_col = self.tableWidget.selectedItems()[0].column()
+            
+            temp_row = 0
+            temp_col = 0
+            if current_row == 0 and current_col == 0:
+                temp_row = 1
+            self.tableWidget.setCurrentCell(temp_row, temp_col)
+            
+            self.tableWidget.setCurrentCell(current_row, current_col)
+        except:
+            pass
+
+
         # 已更新数据传输
         try:
             row_num = self.rowCount()

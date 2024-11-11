@@ -18,27 +18,29 @@ class Indiviplt(QtWidgets.QDialog):
         self.figure = plt.figure()
         self.setWindowTitle("Individual Value Graph")
         self.canvas = FigureCanvas(self.figure)
-        # self.button_plot = QtWidgets.QPushButton("绘制")
+        self.button_plot = QtWidgets.QPushButton("Draw")
         self.data = data
         self.items = item
         # 连接事件
-        # self.button_plot.clicked.connect(self.plot_)
+        self.button_plot.clicked.connect(self.plot_)
         
         # 设置布局
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(self.canvas)
-        # layout.addWidget(self.button_plot)
+        # layout.addWidget(self.canvas)
+        layout.addWidget(self.button_plot)
         self.setLayout(layout)
         # 转换数据
+    # 连接的绘制的方法
+    def plot_(self):
         x = []
-        for i in range(len(item)):
-            x += [[item[i]] * len(data[i])]
+        for i in range(len(self.items)):
+            x += [[self.items[i]] * len(self.data[i])]
         
         xf = []
         yf = []
-        for i in range(len(item)):
+        for i in range(len(self.items)):
             xf += x[i]
-            yf += data[i]
+            yf += self.data[i]
         
         ax1 = self.figure.subplots(1,1)
 
@@ -50,9 +52,14 @@ class Indiviplt(QtWidgets.QDialog):
     
         ax1 = sns.swarmplot(x=np.array(xf), y=np.array(yf), color="red", alpha=.35)
 
-        self.canvas.draw()
-        # plt.show()
+        # self.canvas.draw()
+        plt.show()
+        self.closeall()
 
+
+    def closeall(self):
+        self.done(0)
+        # self.canvas.close()
 # 运行程序
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

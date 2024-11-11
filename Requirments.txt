@@ -3,3 +3,4 @@ numpy
 matplotlib
 seaborn
 qt5-applications
+scipy
