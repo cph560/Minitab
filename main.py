@@ -180,6 +180,8 @@ class Ui_Main(Ui_GUI):
                 if item is not None:
                     if self.is_number(item.text()):
                         rowData.append(float(item.text()))
+                    elif item.text() !="" and item.text()!=np.nan:
+                        rowData.append(item.text())
                     else:
                         rowData.append(np.nan)
                     # if item.text().isdigit():

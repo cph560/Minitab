@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>834</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuview">
@@ -223,8 +223,14 @@
    </property>
   </action>
   <action name="action_T">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>1 Sample T Test</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
    </property>
   </action>
   <action name="action_T_2">
@@ -303,6 +309,9 @@
    </property>
   </action>
   <action name="actionProbability_Plot">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Probability Plot </string>
    </property>

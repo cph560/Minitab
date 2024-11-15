@@ -1,3 +1,5 @@
+from pandas.core.dtypes.inference import is_number
+
 from General_Window import  general_window
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -89,18 +91,24 @@ class Histogram_plot(general_window):
 
 
             for i,column in enumerate(column_list):
-                histogram_label_added = False
-                fit_label_added = False
                 plot_data_drop=plot_data[column].dropna()#对绘图数据去除nan
-                print(column,len(plot_data_drop))
-                plt.hist(plot_data_drop, density=True,bins=bin, alpha=0.9, color=colormap(i) , edgecolor='black',label=f'{column}-Histogram')
-                if  self.distribution_set=="Yes":
-                    mu, std = norm.fit(plot_data_drop)
-                    # 生成拟合的正态分布曲线的数据点
-                    x = np.linspace(plot_data_drop.min(), plot_data_drop.max(), 100)
-                    y = norm.pdf(x, mu, std)
-                    # 绘制拟合的正态分布曲线
-                    plt.plot(x, y, '-.', color=colormap2(i),linewidth=2,label=f'{column}-Fit')
+                result='num'
+                for item in plot_data_drop:
+                    if is_number(item)==False:
+                        result='text'
+                if result=='text':
+                    counts = pd.Series(plot_data_drop).value_counts()
+                    counts.plot(kind='bar')
+                else:#需要优化，1.归一化问题 2. 数据类型问题
+                    print(column, len(plot_data_drop))
+                    plt.hist(plot_data_drop, density=True,bins=bin, alpha=0.9, color=colormap(i) , edgecolor='black',label=f'{column}-Histogram')
+                    if self.distribution_set == "Yes":
+                        mu, std = norm.fit(plot_data_drop)
+                        # 生成拟合的正态分布曲线的数据点
+                        x = np.linspace(plot_data_drop.min(), plot_data_drop.max(), 100)
+                        y = norm.pdf(x, mu, std)
+                        # 绘制拟合的正态分布曲线
+                        plt.plot(x, y, '-.', color=colormap2(i), linewidth=2, label=f'{column}-Fit')
 
 
             plt.legend()
@@ -115,31 +123,35 @@ class Histogram_plot(general_window):
             # 显示图形
             plt.show()
 
+            from Scatter_plot import Scatter_plot
+            table_data = self.get_table_data()
+            pl = Scatter_plot(table_data)
+            self.windows.append(pl)
 
 
         except Exception as e:
             print(e)
-            self.msgbox_info('Error', '列信息有误，请检查')
+            self.msgbox_info('Error', e)
 
 
 if __name__ == '__main__':
     columns = ['Size', 'Amount', 'C3', 'Test', 'C5']
     # 定义数据
     data = [
-        [19.0, 14.0, 9.0, 12.0, 3.0],
-        [3.0, 16.0, 5.0, 20.0, 20.0],
-        [19.0, 5.0, 14.0, 15.0, 9.0],
-        [18.0, 10.0, 5.0, 13.0, 8.0],
-        [6.0, 14.0, 12.0, 10.0, 2.0],
-        [0.0, 0.0, 0.0, 0.0, 0.0],
-        [9.0, 8.0, 5.0, 11.0, 18.0],
-        [5.0, 15.0, 16.0, 5.0, 9.0]
+        [19.0, 14.0, 'AA', 12.0, 3.0],
+        [3.0, 16.0, 'AA', 20.0, 20.0],
+        [19.0, 5.0, 'AA', 15.0, 9.0],
+        [18.0, 10.0, 'AA', 13.0, 8.0],
+        [6.0, 14.0, 'AA', 10.0, 2.0],
+        [0.0, 0.0, 'AA', 0.0, 0.0],
+        [9.0, 8.0, 'CC', 11.0, 18.0],
+        [5.0, 15.0, 'AA', 5.0, 9.0]
     ]
 
     # 创建DataFrame
     df = pd.DataFrame(data, columns=columns)
-    df=pd.DataFrame(np.random.randn(1000),columns=['1'])
-    df['2']=np.random.randn(1000)
+    # df=pd.DataFrame(np.random.randn(1000),columns=['1'])
+    # df['2']=np.random.randn(1000)
     app = QtWidgets.QApplication(sys.argv)
     main_window = Histogram_plot(df)
     app.exec()
