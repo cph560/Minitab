@@ -9,7 +9,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from mytablewidget import MyTableWidget
+import sys
 
 class Ui_GUI(object):
     def setupUi(self, GUI):
@@ -165,6 +166,13 @@ class Ui_GUI(object):
         self.menuBar.addAction(self.menuSet.menuAction())
         self.menuBar.addAction(self.menuHelp.menuAction())
 
+        #Ìí¼ÓÏî
+        self.action_equation = QtWidgets.QAction(GUI)
+        self.action_equation.setObjectName("action_equation")
+        self.menuFormula.addAction(self.action_equation)
+        
+        ###
+
         self.retranslateUi(GUI)
         self.actionFull_Screen.triggered.connect(GUI.showMaximized) # type: ignore
         self.actionNormal.triggered.connect(GUI.showNormal) # type: ignore
@@ -194,7 +202,7 @@ class Ui_GUI(object):
         self.actionPareto.setText(_translate("GUI", "Pareto"))
         self.actionsearch.setText(_translate("GUI", "Search"))
         self.action.setText(_translate("GUI", "Time Series Plot"))
-        self.action_2.setText(_translate("GUI", "æŽ§åˆ¶å›¾"))
+        self.action_2.setText(_translate("GUI", "Control plot"))
         self.action_3.setText(_translate("GUI", "Scatter Plot"))
         self.action_4.setText(_translate("GUI", "Histogram"))
         self.action_5.setText(_translate("GUI", "Pareto Chart"))
@@ -219,3 +227,6 @@ class Ui_GUI(object):
         self.actionX_Bar_Chart.setText(_translate("GUI", "X-Bar R Chart"))
         self.actionProbability_Plot.setText(_translate("GUI", "Probability Plot "))
         self.actionRandom_Int.setText(_translate("GUI", "Random Int"))
+
+        #ADDon
+        self.action_equation.setText(_translate("GUI", "Equation"))

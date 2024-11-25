@@ -73,6 +73,7 @@ class Ui_Main(Ui_GUI):
         self.actionsearch.triggered.connect(self.set_random_data)
         self.actionRandom_Int.triggered.connect(self.random_int)
         self.actionNew.triggered.connect(self.resize_setting)
+        self.action_equation.triggered.connect(self.equation)
 
     def resize_setting(self):
         #没做窗口，目前是默认值
@@ -133,6 +134,8 @@ class Ui_Main(Ui_GUI):
     # 随机数接口
     def random_int(self):
         from Random import Random_interface
+
+        
         interface = Random_interface()
         interface.random_res.connect(self.update_random)
 
@@ -140,6 +143,8 @@ class Ui_Main(Ui_GUI):
         if interface.exec_() == QDialog.Accepted:
             # print(interface.results)
             self.update_random(interface.col_name, result=interface.results)
+        
+
 
     def adjust_column_width(self):
         #自动调整列宽，并维持列宽在设定最小值之上
@@ -151,6 +156,7 @@ class Ui_Main(Ui_GUI):
                 self.tableWidget.setColumnWidth(column, min_column_width)
 
     def update_random(self, name="C1", result=[]):
+        
         #默认名不生效，暂未排查原因
         if name == "":
             name = "C1"
@@ -159,10 +165,55 @@ class Ui_Main(Ui_GUI):
         
         for lis_num in range(len(name_list)):
             res_set = [float(i) for i in result[lis_num].flatten()]
-            self.tableWidget.random_col(name_list[lis_num], res_set)
+            self.tableWidget.import_col(name_list[lis_num], res_set)
 
         self.reset_col_row_name()
         self.adjust_column_width()
+    
+    # Equation 接口
+    def equation(self):
+        from Equation import Ui_Equation
+        Table_data = self.tableWidget.transfer_data()
+        try:
+            current_col = self.tableWidget.selectedItems()[0].column()
+            # print(current_col)
+            Table_data["*C"+str(current_col+1)] = []
+        except:
+            pass
+
+        interface = Ui_Equation(Table_data)
+        interface.eq_res.connect(self.Update_equation)
+
+        #以下可能有未知BUG
+        if interface.exec_() == QDialog.Accepted:
+            
+            if "*" in interface.select:
+                print(interface.select)
+                # out_col = interface.select.lstrip("*")
+                # print(out_col, interface.row_num)
+                self.Update_equation(interface.select, result=interface.result, row = interface.row_num)
+            else:
+                print(interface.select)
+                self.Update_equation(name = interface.outputcolumn, result=interface.result, row =interface.row_num)
+
+    def Update_equation(self, name="C1", result=[], row = 1):
+        #默认名不生效，暂未排查原因
+        if name == "":
+            name = "C1"
+        #以上为临时解决方案
+        # print(name)
+        if "*" in name:
+            name = name.lstrip("*")
+
+        name_list = name.split()
+        
+        for lis_num in range(len(name_list)):
+            res_set = [float(i) for i in result]
+            self.tableWidget.import_col(name_list[lis_num], res_set, row)
+
+        self.reset_col_row_name()
+        self.adjust_column_width()
+        
 
     def get_table_data(self):
         #保存编辑中的位置数据
@@ -218,7 +269,6 @@ class Ui_Main(Ui_GUI):
         # df=df.fillna('')  #填充nan
         return df
 
-    # Pareto图接口
     def is_number(self, s):
         pattern = r'^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$'
         return re.match(pattern, s) is not None
@@ -249,7 +299,7 @@ class Ui_Main(Ui_GUI):
         table_data = self.get_table_data()
         pl = Histogram_plot(table_data)
         self.windows.append(pl)
-
+    # Pareto图接口
     def Pareto(self):
         from Plot_interface import Ui_Plot_interface
         pareto_data = self.tableWidget.transfer_data()

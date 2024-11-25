@@ -9,9 +9,15 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
 
+class Ui_Form(QtWidgets.QDialog):
+    def init(self):
+        super(Ui_Form,self).__init__()
+        self.setupUi(self)
+        
+        # self.setLayout(self.gridLayout)
 
-class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(400, 300)
@@ -39,7 +45,7 @@ class Ui_Form(object):
         self.label_6 = QtWidgets.QLabel(self.widget)
         self.label_6.setObjectName("label_6")
         self.gridLayout.addWidget(self.label_6, 2, 1, 1, 1)
-
+        # self.setLayout(self.gridLayout)
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -51,4 +57,13 @@ class Ui_Form(object):
         self.label_3.setText(_translate("Form", "TextLabel"))
         self.label_4.setText(_translate("Form", "TextLabel"))
         self.label_5.setText(_translate("Form", "TextLabel"))
-        self.label_6.setText(_translate("Form", "TextLabel"))
+        self.label_6.setText(_translate("Form", "xs"))
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_Form()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

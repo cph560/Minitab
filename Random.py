@@ -380,7 +380,7 @@ class Random_interface(QDialog):
                 res.append(self.results)
             # print(res)
             self.random_res.emit(self.col_name, res)
-            self.done(1)
+           
             self.close()
 
         except BaseException as e:

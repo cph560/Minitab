@@ -9,9 +9,14 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
 
-
-class Ui_Plot_interface(object):
+class Ui_Plot_interface(QtWidgets.QDialog):
+    def init(self):
+        super(Ui_Plot_interface,self).__init__()
+        self.setupUi(self)
+        
+        # self.setLayout(self.gridLayout)
     def setupUi(self, Plot_interface):
         Plot_interface.setObjectName("Plot_interface")
         Plot_interface.resize(574, 445)
@@ -99,3 +104,12 @@ class Ui_Plot_interface(object):
         self.toolBox.setItemText(self.toolBox.indexOf(self.page), _translate("Plot_interface", "Plotted by Items\' Value"))
         self.label_6.setText(_translate("Plot_interface", "Items:"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("Plot_interface", "Plotted by Items\' Frequency"))
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_Plot_interface()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

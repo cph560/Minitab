@@ -5,7 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
 import time
- 
+
  
 class MyTable(QTableWidget):
     def __init__(self, parent=None):
@@ -55,6 +55,10 @@ class UpdateData(QThread):
  
  
 if __name__ == '__main__':
+    expr = '2 ** (3 + 5) / 2'
+    result = eval(expr)
+
+    print(result)  # 输出：8.5
     # 实例化表格
     app = QApplication(sys.argv)
     myTable = MyTable()
@@ -62,7 +66,7 @@ if __name__ == '__main__':
     update_data_thread = UpdateData()
     update_data_thread.update_date.connect(myTable.update_item_data)  # 链接信号
     update_data_thread.start()
- 
+
     # 显示在屏幕中央
     desktop = QApplication.desktop()  # 获取坐标
     x = (desktop.width() - myTable.width()) // 2
