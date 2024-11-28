@@ -172,7 +172,7 @@ class Ui_Equation(QDialog):
         self.toolBox.setItemText(self.toolBox.indexOf(self.page), _translate("Plot_interface", "Created by Column"))
         self.label_6.setText(_translate("Plot_interface", "Input Formula:"))
         self.label_out1.setText(_translate("Plot_interface", "Output Column:"))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("Plot_interface", "Created by Cell"))
+        self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("Plot_interface", "Created by Cell you Selected"))
         self.label_out2.setText(_translate("Plot_interface", "Number of Output Cells:"))
     ###
 
