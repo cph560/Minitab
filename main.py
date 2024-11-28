@@ -74,7 +74,7 @@ class Ui_Main(Ui_GUI):
         self.actionsearch.triggered.connect(self.set_random_data)
         self.actionRandom_Int.triggered.connect(self.random_int)
         self.actionNew.triggered.connect(self.resize_setting)
-        #self.action_statistics.triggered.connect(self.calculate_statistics)
+        self.action_statistics.triggered.connect(self.calculate_statistics)
         self.action_equation.triggered.connect(self.equation)
 
     def resize_setting(self):
