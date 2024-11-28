@@ -12,8 +12,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Dialog(object):
-    def __init__(self,type):
-        self.type=type
+    def __init__(self, type):
+        self.type = type
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(477, 243)
@@ -40,9 +40,9 @@ class Ui_Dialog(object):
         self.clear_btn.setGeometry(QtCore.QRect(400, 8, 71, 21))
         self.clear_btn.setObjectName("clear_btn")
         self.setting_btn = QtWidgets.QPushButton(Dialog)
-        self.setting_btn.setGeometry(QtCore.QRect(280, 150, 71, 31))
+        self.setting_btn.setGeometry(QtCore.QRect(260, 140, 121, 31))
         font = QtGui.QFont()
-        font.setPointSize(9)
+        font.setPointSize(8)
         self.setting_btn.setFont(font)
         self.setting_btn.setObjectName("setting_btn")
 

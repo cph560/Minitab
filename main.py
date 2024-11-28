@@ -18,6 +18,7 @@ import time
 from PyQt5.QtWidgets import QMessageBox
 
 
+
 #主函数
 #除#可修改项以外均为QtDesigner生成
 class Ui_Main(Ui_GUI):
@@ -73,6 +74,7 @@ class Ui_Main(Ui_GUI):
         self.actionsearch.triggered.connect(self.set_random_data)
         self.actionRandom_Int.triggered.connect(self.random_int)
         self.actionNew.triggered.connect(self.resize_setting)
+        self.action_statistics.triggered.connect(self.calculate_statistics)
     def resize_setting(self):
         #没做窗口，目前是默认值
         newRowCount=10
@@ -263,6 +265,55 @@ class Ui_Main(Ui_GUI):
         box_data = self.tableWidget.transfer_data()
         interface = Ui_Plot_interface('box', box_data)
         interface.exec_()
+
+    def calculate_statistics(self):
+        selected_items = []
+        total_selected_count = 0  # 选中的项的个数
+        valid_selected_count = 0  # 被统计的有效量的数量
+        # 获取选中的单元格
+        for item in self.tableWidget.selectedItems():
+            total_selected_count += 1
+            try:
+                value = float(item.text())
+                selected_items.append(value)
+                valid_selected_count += 1
+            except ValueError:
+                continue
+
+        if not selected_items:
+            Result= {
+                "Mean": None,
+                "Max": None,
+                "Min": None,
+                "Variance": None,
+                "Median": None,
+                "Sum": None,
+
+            }
+        # 计算统计量
+        mean = np.mean(selected_items)
+        max_value = np.max(selected_items)
+        min_value = np.min(selected_items)
+        variance = np.var(selected_items)
+        median = np.median(selected_items)
+        sum=np.sum(selected_items)
+
+        Result={"Mean": mean,
+                "Max": max_value,
+                "Min": min_value,
+                "Variance": variance,
+                "Median": median,
+                "Sum": sum,
+                }
+        def format_value(value, precision=5):
+            if value is None:
+                return "None"
+            return f"{value:.{precision}g}"
+        formatted_result = {key: format_value(value) for key, value in Result.items()}
+        result_str="Count: %s (valid:%s)\n"%(str(total_selected_count),str(valid_selected_count))
+        cal_result= "\n".join([f"{key}: {value}" for key, value in formatted_result.items()])
+        result_str+=cal_result
+        QMessageBox.about(MainWindow, 'Statistic Results', result_str)
 
 
 class ColorDelegate(QTableWidgetItem):

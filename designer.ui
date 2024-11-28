@@ -63,6 +63,7 @@
      <string>Formula</string>
     </property>
     <addaction name="actionRandom_Int"/>
+    <addaction name="action_statistics"/>
    </widget>
    <widget class="QMenu" name="menuMenu">
     <property name="title">
@@ -319,6 +320,11 @@
   <action name="actionRandom_Int">
    <property name="text">
     <string>Random Int</string>
+   </property>
+  </action>
+  <action name="action_statistics">
+   <property name="text">
+    <string>Basic Statistics</string>
    </property>
   </action>
  </widget>

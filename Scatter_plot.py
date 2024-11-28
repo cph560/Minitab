@@ -38,11 +38,6 @@ class Scatter_plot(general_window):
         self.draw_list = [1]
         self.open_windows = []
         self.open_windows.append(self.new_window)
-
-    def quit(self):
-        self.new_window.close()
-
-
     def msgbox_info(self, title, text):
         QMessageBox.about(self.new_window, title, text)
 
