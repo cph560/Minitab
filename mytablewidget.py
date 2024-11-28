@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
 from PyQt5 import  QtWidgets
 from PyQt5.Qt import QTableWidgetItem
- 
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor, QBrush
 
 # 定义PYQT表格操作
 class MyTableWidget(QtWidgets.QTableWidget):
@@ -15,13 +15,13 @@ class MyTableWidget(QtWidgets.QTableWidget):
         self.customContextMenuRequested.connect(self.showMenu)
         self.contextMenu = QMenu(self)
         
-        self.CP = self.contextMenu.addAction('复制')
-        self.JQ = self.contextMenu.addAction('剪切')
-        self.NT = self.contextMenu.addAction('粘贴')
-        self.DE = self.contextMenu.addAction('删除')
-        self.ADD_col = self.contextMenu.addAction('添加列')
-        self.ADD_row = self.contextMenu.addAction('添加行')
-        self.CT = self.contextMenu.addAction('设为标题(第一行)')
+        self.CP = self.contextMenu.addAction('Copy')
+        self.JQ = self.contextMenu.addAction('Cut')
+        self.NT = self.contextMenu.addAction('Paste')
+        self.DE = self.contextMenu.addAction('Delete')
+        self.ADD_col = self.contextMenu.addAction('Add Column')
+        self.ADD_row = self.contextMenu.addAction('Add Row')
+        self.CT = self.contextMenu.addAction('Data Status')
 
         #链接Function
         self.CP.triggered.connect(self.copy)
@@ -30,7 +30,7 @@ class MyTableWidget(QtWidgets.QTableWidget):
         self.DE.triggered.connect(self.Delete)
         self.ADD_col.triggered.connect(self.ADD_COL)
         self.ADD_row.triggered.connect(self.ADD_ROW)
-        self.CT.triggered.connect(self.changeColName)
+        self.CT.triggered.connect(self.Data_status)
         self.itemChanged.connect(self.on_item_changed)
         self.init='no'
     def on_item_changed(self, item):
@@ -63,7 +63,11 @@ class MyTableWidget(QtWidgets.QTableWidget):
             
             for index in indexes:
                 row, column = index.row(), index.column()
-                item = QTableWidgetItem()
+                if row == 0:
+                    color = Qt.lightGray
+                    item = ColorDelegate(color)
+                else:
+                    item = QTableWidgetItem()
                 
                 self.setItem(row, column, item)
         except BaseException as e:
@@ -138,6 +142,8 @@ class MyTableWidget(QtWidgets.QTableWidget):
     #添加列
     def ADD_COL(self):
         try:
+            cur_col_num = self.columnCount()
+            
             col = set()
             indexes = self.selectedIndexes()
             for index in indexes:  # 遍历每个单元格
@@ -145,6 +151,11 @@ class MyTableWidget(QtWidgets.QTableWidget):
                 col.add(column)
             
             self.setColumnCount(self.columnCount()+len(col))
+            color = Qt.lightGray
+            item = ColorDelegate(color)
+            for i in range(len(col)):
+                self.setHorizontalHeaderItem(cur_col_num+i, QTableWidgetItem('C'+str(cur_col_num+i+1)))
+                self.setItem(0, cur_col_num+i, item)
         except Exception as e:
             print(e)
             return ''
@@ -249,6 +260,22 @@ class MyTableWidget(QtWidgets.QTableWidget):
     #数据传输
     def transfer_data(self):
         #1106 Yedi 更新传输至新框架
+
+        try:
+            current_row = self.tableWidget.selectedItems()[0].row()
+            current_col = self.tableWidget.selectedItems()[0].column()
+            
+            temp_row = 0
+            temp_col = 0
+            if current_row == 0 and current_col == 0:
+                temp_row = 1
+            self.tableWidget.setCurrentCell(temp_row, temp_col)
+            
+            self.tableWidget.setCurrentCell(current_row, current_col)
+        except:
+            pass
+
+
         # 已更新数据传输
         try:
             row_num = self.rowCount()
@@ -322,7 +349,7 @@ class MyTableWidget(QtWidgets.QTableWidget):
         else:
             super().keyPressEvent(event)
 
-    def random_col(self, name="C1", data=[]):
+    def import_col(self, name="C1", data=[], row = 1):
 
         c = self.columnCount()
         try:
@@ -340,4 +367,26 @@ class MyTableWidget(QtWidgets.QTableWidget):
         for i in range(len(data)):
             item = QTableWidgetItem()
             item.setText(str(data[i]))
-            self.setItem(i+1, col, item)
+            self.setItem(i+row, col, item)
+    
+    def Data_status(self):
+        from DataStatus import Ui_Dialog
+        
+        text = self.selected_tb_text()
+        data_list = text.split("\n")
+        # print(data_list)
+        res = []
+        for item in data_list:
+            for data in item.strip().split("\t"):
+                if data == '':
+                    continue
+                res.append(float(data))
+        
+        # print(res)
+        interface = Ui_Dialog(res)
+        interface.exec_()
+    
+class ColorDelegate(QTableWidgetItem):
+    def __init__(self, color):
+        super(ColorDelegate, self).__init__()
+        self.setBackground(QBrush(color))

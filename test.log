@@ -19128,27 +19128,38 @@ _weakrefset.py(57):             try:
 _weakrefset.py(58):                 item = pop()
 _weakrefset.py(59):             except IndexError:
 _weakrefset.py(60):                 return
-Processing items:   0%|                                                   | 0/10 [00:00<?, ?item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:   0%|                                                   | 0/10 [00:00<?, ?item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  10%|¨€¨€¨€¨€¨†                                      | 1/10 [00:00<00:00,  9.90item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  10%|¨€¨€¨€¨€¨†                                      | 1/10 [00:00<00:00,  9.90item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  20%|¨€¨€¨€¨€¨€¨€¨€¨€¨„                                  | 2/10 [00:00<00:00,  9.84item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  20%|¨€¨€¨€¨€¨€¨€¨€¨€¨„                                  | 2/10 [00:00<00:00,  9.84item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  30%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨                              | 3/10 [00:00<00:00,  9.83item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  30%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨                              | 3/10 [00:00<00:00,  9.83item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  40%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨‡                         | 4/10 [00:00<00:00,  9.79item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  40%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨‡                         | 4/10 [00:00<00:00,  9.79item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  50%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨„                     | 5/10 [00:00<00:00,  9.80item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  50%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨„                     | 5/10 [00:00<00:00,  9.80item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  60%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨‚                 | 6/10 [00:00<00:00,  9.81item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  60%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨‚                 | 6/10 [00:00<00:00,  9.81item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  70%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€             | 7/10 [00:00<00:00,  9.71item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  70%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€             | 7/10 [00:00<00:00,  9.71item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  80%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨…        | 8/10 [00:00<00:00,  9.74item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  80%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨…        | 8/10 [00:00<00:00,  9.74item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items:  90%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨ƒ    | 9/10 [00:00<00:00,  9.77item/s]Base.py(29):         time.sleep(0.1)
+
+Processing items:  90%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨ƒ    | 9/10 [00:00<00:00,  9.77item/s]Base.py(29):         time.sleep(0.1)
 Base.py(28):     for i in tqdm(range(10), desc="Processing items", unit="item"):
-Processing items: 100%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€| 10/10 [00:01<00:00,  9.79item/s] --- modulename: _weakrefset, funcname: remove
+
+Processing items: 100%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€| 10/10 [00:01<00:00,  9.79item/s] --- modulename: _weakrefset, funcname: remove
 _weakrefset.py(111):         if self._pending_removals:
 _weakrefset.py(113):         self.data.remove(ref(item))
  --- modulename: _weakrefset, funcname: __iter__
@@ -19177,7 +19188,8 @@ _weakrefset.py(57):             try:
 _weakrefset.py(58):                 item = pop()
 _weakrefset.py(59):             except IndexError:
 _weakrefset.py(60):                 return
-Processing items: 100%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€| 10/10 [00:01<00:00,  9.77item/s]
+
+Processing items: 100%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€| 10/10 [00:01<00:00,  9.77item/s]
 Base.py(31):     print("\nTask completed!")
 
 Task completed!
@@ -19197,3 +19209,7 @@ threading.py(570):         return self._flag
 threading.py(1073):         with _active_limbo_lock:
 threading.py(1074):             del _active[get_ident()]
 threading.py(1073):         with _active_limbo_lock:
+<<<<<<< HEAD
+2024-11-04 16:20:04,831 - Random.py[line:48] - INFO: This is an info message
+=======
+>>>>>>> 13c1c284a74ef2e6409b4d1514d411fded67c519

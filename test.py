@@ -1,71 +1,76 @@
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import sys
-import numpy as np
-from scipy.stats import norm
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextBrowser
-from PyQt5.QtGui import QPixmap
-import matplotlib.pyplot as plt
-from io import BytesIO
+import time
+
+ 
+class MyTable(QTableWidget):
+    def __init__(self, parent=None):
+        super(MyTable, self).__init__(parent)
+        self.setWindowTitle("¸÷¸öÊĞ³¡±ÈÌØ±ÒÊµÊ±ĞĞÇé")  # ÉèÖÃ±í¸ñÃû³Æ
+        self.setWindowIcon(QIcon("ok.png"))  # ÉèÖÃÍ¼±ê£¨Í¼Æ¬Òª´æÔÚ£©
+        self.resize(600, 200)  # ÉèÖÃ±í¸ñ³ß´ç£¨ÕûÌå´óĞ¡£©
+        self.setColumnCount(5)  # ÉèÖÃÁĞÊı
+        self.setRowCount(5)  # ÉèÖÃĞĞÊı
+        # self.setColumnWidth(0, 200)  # ÉèÖÃÁĞ¿í(µÚ¼¸ÁĞ£¬ ¿í¶È)
+        # self.setRowHeight(0, 100)  # ÉèÖÃĞĞ¸ß(µÚ¼¸ĞĞ£¬ ĞĞ¸ß)
+     
+        column_name = [
+            'ETH/BIC',
+            'column1',
+            'column2',
+            'column3',
+            'column4',
+        ]
+        self.setHorizontalHeaderLabels(column_name)  # ÉèÖÃÁĞÃû³Æ
+        row_name = [
+            'binance',
+            'okex',
+            'bitfinex',
+            'bittrex',
+            'bithumb',
+        ]
+        self.setVerticalHeaderLabels(row_name)  # ÉèÖÃĞĞÃû³Æ
+ 
+    def update_item_data(self, data):
+        """¸üĞÂÄÚÈİ"""
+        self.setItem(0, 1, QTableWidgetItem(data)) # ÉèÖÃ±í¸ñÄÚÈİ(ĞĞ£¬ ÁĞ) ÎÄ×Ö
+ 
+ 
+class UpdateData(QThread):
+    """¸üĞÂÊı¾İÀà"""
+    update_date = pyqtSignal(str)  # pyqt5 Ö§³Öpython3µÄstr£¬Ã»ÓĞQstring
 
 
-# å‡è®¾è¿™æ˜¯ä½ çš„ç±»çš„ä¸€éƒ¨åˆ†
-class YourClass:
-    def __init__(self):
-        self.distribution_set = True
-        self.textBrowser = QTextBrowser()  # å‡è®¾ä½ å·²ç»åˆå§‹åŒ–äº†è¿™ä¸ªæ§ä»¶
-        self.column_list = ['column1', 'column2']  # ç¤ºä¾‹åˆ—å
-        self.plot_data = {
-            'column1': np.random.normal(5, 2, 100),
-            'column2': np.random.normal(3, 1, 100)
-        }
-        self.min_val = 0
-        self.max_val = 10
-        self.colormap2 = lambda i: f'color{i}'  # ç¤ºä¾‹é¢œè‰²æ˜ å°„å‡½æ•°
+    def run(self):
+        
+        while True:
+            localtime = time.localtime(time.time())
+            localtime = time.strftime("%Y-%m-%d %H:%M:%S", localtime)
+            self.update_date.emit(localtime)  # ·¢ÉäĞÅºÅ
+            time.sleep(1)
+ 
+ 
+if __name__ == '__main__':
+    expr = '2 ** (3 + 5) / 2'
+    result = eval(expr)
 
-    def plot_and_show_equations(self):
-        if self.distribution_set:
-            fit_equations = {}
-            for i, column in enumerate(self.column_list):
-                plot_data_drop = self.plot_data[column].dropna()
-                mu, std = norm.fit(plot_data_drop)
-                x = np.linspace(self.min_val, self.max_val, 100)
-                y = norm.pdf(x, mu, std)
-                ax.plot(x, y, '-.', color=self.colormap2(i), linewidth=2, label=f'{column}-Fit')
+    print(result)  # Êä³ö£º8.5
+    # ÊµÀı»¯±í¸ñ
+    app = QApplication(sys.argv)
+    myTable = MyTable()
+    # Æô¶¯¸üĞÂÏß³Ì
+    update_data_thread = UpdateData()
+    update_data_thread.update_date.connect(myTable.update_item_data)  # Á´½ÓĞÅºÅ
+    update_data_thread.start()
 
-                # ä¿å­˜æ‹Ÿåˆçº¿æ–¹ç¨‹ï¼ˆLaTeX æ ¼å¼ï¼‰
-                fit_equation = f"f(x) = \\frac{{1}}{{{std:.2f} \\sqrt{{2\\pi}}}} e^{{-\\frac{{(x - {mu:.2f})^2}}{{2 {std:.2f}^2}}}}"
-                fit_equations[column] = fit_equation
-
-            # å°†æ‰€æœ‰åˆ—çš„æ‹Ÿåˆçº¿æ–¹ç¨‹æ˜¾ç¤ºåœ¨ QTextBrowser ä¸­
-            for column, equation in fit_equations.items():
-                self.textBrowser.append(f"æ‹Ÿåˆçº¿æ–¹ç¨‹ ({column}): ")
-                self.textBrowser.append(self.latex_to_image(equation))
-
-    def latex_to_image(self, equation):
-        fig, ax = plt.subplots()
-        ax.text(0.5, 0.5, f'${equation}$', fontsize=20, ha='center', va='center')
-        ax.axis('off')
-
-        buf = BytesIO()
-        fig.savefig(buf, format='png')
-        buf.seek(0)
-
-        pixmap = QPixmap()
-        pixmap.loadFromData(buf.getvalue())
-
-        return f'<img src="data:image/png;base64,{buf.getvalue().hex()}">'
-
-
-# ç¤ºä¾‹åº”ç”¨
-app = QApplication(sys.argv)
-window = QWidget()
-layout = QVBoxLayout()
-text_browser = QTextBrowser()
-layout.addWidget(text_browser)
-
-your_class_instance = YourClass()
-your_class_instance.textBrowser = text_browser
-your_class_instance.plot_and_show_equations()
-
-window.setLayout(layout)
-window.show()
-sys.exit(app.exec_())
+    # ÏÔÊ¾ÔÚÆÁÄ»ÖĞÑë
+    desktop = QApplication.desktop()  # »ñÈ¡×ø±ê
+    x = (desktop.width() - myTable.width()) // 2
+    y = (desktop.height() - myTable.height()) // 2
+    myTable.move(x, y)  # ÒÆ¶¯
+ 
+    # ÏÔÊ¾±í¸ñ
+    myTable.show()
+    app.exit(app.exec_())
