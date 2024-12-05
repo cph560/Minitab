@@ -326,6 +326,9 @@ class Ui_Main(Ui_GUI):
         interface.exec_()
 
     def calculate_statistics(self):
+        if len(self.tableWidget.selectedItems())==0:
+            QMessageBox.about(MainWindow, 'Error','No cells selected' )
+            return
         selected_items = []
         total_selected_count = 0  # 选中的项的个数
         valid_selected_count = 0  # 被统计的有效量的数量
