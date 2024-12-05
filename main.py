@@ -4,6 +4,8 @@ import sys
 import pandas as pd
 import numpy as np
 from pandas.core.common import temp_setattr
+from tkinter import filedialog
+import math
 
 #自定义Widget
 from mytablewidget import MyTableWidget
@@ -76,11 +78,14 @@ class Ui_Main(Ui_GUI):
         self.actionNew.triggered.connect(self.resize_setting)
         self.action_statistics.triggered.connect(self.calculate_statistics)
         self.action_equation.triggered.connect(self.equation)
+        self.actionSave.triggered.connect(self.SaveToExcel)
+        self.actionLoad.triggered.connect(self.LoadExcel)
+        self.actionQuit.triggered.connect(self.closeall)
 
     def resize_setting(self):
         #没做窗口，目前是默认值
-        newRowCount=10
-        newColumnCount=10
+        newRowCount=5000
+        newColumnCount=25
         self.rebuild(newRowCount+1,newColumnCount)
         pass
     
@@ -183,20 +188,31 @@ class Ui_Main(Ui_GUI):
         except:
             pass
 
-        interface = Ui_Equation(Table_data)
-        interface.eq_res.connect(self.Update_equation)
+        try:
+            self.r = self.tableWidget.selectedItems()[0].row()
+            content = self.tableWidget.selectedItems()[0].text()
+            value = float(content) if content else 1
+            # print([self.r, current_col+1, value])
+            interface = Ui_Equation(Table_data, [self.r, current_col+1, value])
+            interface.eq_res.connect(self.Update_equation)
 
-        #以下可能有未知BUG
-        if interface.exec_() == QDialog.Accepted:
+            if interface.exec_() == QDialog.Accepted:
             
-            if "*" in interface.select:
-                print(interface.select)
-                # out_col = interface.select.lstrip("*")
-                # print(out_col, interface.row_num)
-                self.Update_equation(interface.select, result=interface.result, row = interface.row_num)
-            else:
-                print(interface.select)
-                self.Update_equation(name = interface.outputcolumn, result=interface.result, row =interface.row_num)
+                if "*" in interface.select:
+                    print(interface.select)
+                    # out_col = interface.select.lstrip("*")
+                    # print(out_col, interface.row_num)
+                    self.Update_equation(interface.select, result=interface.result, row = interface.row_num)
+                else:
+                    print(interface.select)
+                    self.Update_equation(name = interface.outputcolumn, result=interface.result, row = interface.row_num)
+        except BaseException as e:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.setWindowTitle("Error")
+            error_dialog.showMessage(str(e))
+            error_dialog.exec_()
+
+
 
     def Update_equation(self, name="C1", result=[], row = 1):
         #默认名不生效，暂未排查原因
@@ -215,7 +231,36 @@ class Ui_Main(Ui_GUI):
 
         self.reset_col_row_name()
         self.adjust_column_width()
-        
+    
+    def SaveToExcel(self):
+        try:
+            df = self.get_table_data()
+            folder_path = filedialog.askdirectory()
+            df.to_excel(f"{folder_path}/table_data.xlsx", index=False)
+        except BaseException as e:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.setWindowTitle("Error")
+            error_dialog.showMessage(str(e))
+            error_dialog.exec_()
+
+    def LoadExcel(self):
+        try:
+            folder_path = filedialog.askopenfilenames()
+            # print(folder_path)
+            dataframe = pd.read_excel(folder_path[0])
+            LoadData = dataframe.to_dict(orient ='list')
+            # print(LoadData)
+
+            for key in LoadData.keys():
+                new_list = [item for item in LoadData[key] if not(math.isnan(item)) == True]
+                
+                self.tableWidget.import_col(key, new_list, 1)
+        except BaseException as e:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.setWindowTitle("Error")
+            error_dialog.showMessage(str(e))
+            error_dialog.exec_()
+
 
     def get_table_data(self):
         #保存编辑中的位置数据
@@ -374,6 +419,10 @@ class Ui_Main(Ui_GUI):
         result_str+=cal_result
         QMessageBox.about(MainWindow, 'Statistic Results', result_str)
 
+    def closeall(self):
+    # 添加自定义逻辑
+        sys.exit()
+
 
 class ColorDelegate(QTableWidgetItem):
     def __init__(self, color):
@@ -386,6 +435,7 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_Main()
     ui.setupUi(MainWindow)
+    
     MainWindow.show()
 
     sys.exit(app.exec_())

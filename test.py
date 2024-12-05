@@ -1,3 +1,4 @@
+# -*- coding: GBK -*-
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -55,7 +56,8 @@ class UpdateData(QThread):
 if __name__ == '__main__':
     expr = '2 ** (3 + 5) / 2'
     result = eval(expr)
-
+    print("C23+C56".lower())
+    
     print(result)  # 输出：8.5
     # 实例化表格
     app = QApplication(sys.argv)

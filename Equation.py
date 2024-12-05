@@ -20,16 +20,18 @@ import sys
 class Ui_Equation(QDialog):
     #添加初始化函数
     eq_res = pyqtSignal(str, list, int)
-    def __init__(self, data = {1: [1], 2: [2, 4]}):          
+    def __init__(self, data = {1: [1], 2: [2, 4]}, current_index = [1,1,1]):          
         
         super(Ui_Equation,self).__init__()
-        self.setupUi(self)
         self.input_Data = data
         self.inputFormula = "*1"
         self.outputcolumn = "c1"
         self.result = []
         self.select = ""
-        self.row_num = 1
+        self.row_num = current_index[0]
+        self.col = current_index[1]
+        self.val = current_index[2]
+        self.setupUi(self)
         ### 根据不同的图表来修改交互界面的按钮
         # if name == 'Pareto':
         #     self.pareto()
@@ -54,6 +56,7 @@ class Ui_Equation(QDialog):
         
     ### Qtdesigner生成项
     def setupUi(self, Plot_interface):
+        
         Plot_interface.setObjectName("Plot_interface")
         Plot_interface.resize(370, 445)
         # self.listWidget = QtWidgets.QListWidget(Plot_interface)
@@ -129,16 +132,31 @@ class Ui_Equation(QDialog):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.layoutWidget_2)
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setObjectName("gridLayout_2")
+
+        self.label_index = QtWidgets.QLabel(self.layoutWidget_2)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_index.setFont(font)
+        self.label_index.setObjectName("label_index")
+        self.gridLayout_2.addWidget(self.label_index, 1, 0, 1, 1)
+
+        self.label_val = QtWidgets.QLabel(self.layoutWidget_2)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_val.setFont(font)
+        self.label_val.setObjectName("label_val")
+        self.gridLayout_2.addWidget(self.label_val, 2, 0, 1, 1)
+
         self.label_6 = QtWidgets.QLabel(self.layoutWidget_2)
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_6.setFont(font)
         self.label_6.setObjectName("label_6")
-        self.gridLayout_2.addWidget(self.label_6, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.label_6, 3, 0, 1, 1)
         ### text input2
         self.lineEdit_For2 = QtWidgets.QLineEdit(self.layoutWidget_2)
         self.lineEdit_For2.setObjectName("lineEdit_For2")
-        self.gridLayout_2.addWidget(self.lineEdit_For2, 2, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.lineEdit_For2, 4, 0, 1, 1)
         ###
         # self.clear_btn2 = QtWidgets.QPushButton(self.layoutWidget, text = 'Clear')
         # self.clear_btn2.setFont(QFont('Arial', 10))
@@ -150,13 +168,16 @@ class Ui_Equation(QDialog):
         font.setPointSize(10)
         self.label_out2.setFont(font)
         self.label_out2.setObjectName("label_out2")
-        self.gridLayout_2.addWidget(self.label_out2, 4, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.label_out2, 5, 0, 1, 1)
         self.lineEdit_out2 = QtWidgets.QLineEdit(self.layoutWidget_2)
         self.lineEdit_out2.setObjectName("lineEdit_out2")
-        self.gridLayout_2.addWidget(self.lineEdit_out2, 5, 0, 1, 1)
-
+        self.gridLayout_2.addWidget(self.lineEdit_out2, 6, 0, 1, 1)
+        
         self.retranslateUi(Plot_interface)
         self.toolBox.setCurrentIndex(0)
+        _translate = QtCore.QCoreApplication.translate
+        self.label_index.setText(_translate("Plot_interface", f"Cell Location: ({self.row_num},{self.col})"))
+        self.label_val.setText(_translate("Plot_interface", f"Value: {self.val}"))
         QtCore.QMetaObject.connectSlotsByName(Plot_interface)
         
         self.buttonBox.rejected.connect(Plot_interface.reject) # type: ignore
@@ -174,6 +195,8 @@ class Ui_Equation(QDialog):
         self.label_out1.setText(_translate("Plot_interface", "Output Column:"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("Plot_interface", "Created by Cell you Selected"))
         self.label_out2.setText(_translate("Plot_interface", "Number of Output Cells:"))
+        self.label_index.setText(_translate("Plot_interface", "Cell Location: NA"))
+        self.label_val.setText(_translate("Plot_interface", "Value: NA"))
     ###
 
 
@@ -205,14 +228,70 @@ class Ui_Equation(QDialog):
         
         try:
             self.out_col = self.lineEdit_out1.text()
-            self.formu = self.lineEdit_For1.text()
+            self.formu = self.lineEdit_For1.text().lower()
+            col_list = []
+            
+            Tcontent = self.formu.lower().split("c")
+            
+            for item in Tcontent:
+                if item != '' and len(Tcontent) > 1:
+                    count = 0
+                    for string in item:
+                        try:
+                            x = int(string)
+                            
+                            count += 1
+                        except:
+                            break
+                        
+                    col_list.append("c"+item[0:count])
+
+            
             input_col = self.comboBox.currentText() if self.comboBox.currentText() != '' else 1
+            
             in_data = self.input_Data[input_col]
             
-            for i in in_data:
-                res = eval(str(i)+self.formu)
-                self.result.append(res)
-            self.eq_res.emit(self.out_col, self.result, self.row_num)
+            Formu_list = []
+            start_point = 0
+            for col in col_list:
+                for strl_num in range(start_point, len(self.formu)):
+                    if self.formu[strl_num]=="c":
+                        # print(start_point,strl_num)
+                        Formu_list.append(self.formu[start_point:strl_num])
+                        start_point = strl_num+len(col)
+                        if start_point >= len(self.formu):
+                            # print(f"break: {start_point}")
+                            break
+                        else:
+                            continue
+                # sym = self.formu.split(col)
+            try: 
+                Formu_list.append(self.formu[start_point:])
+            except:
+                pass
+
+            # print(Formu_list)
+            exec_formu = []
+
+            if len(col_list)==0:
+                for i in range(len(in_data)):
+                    # exec_formu = 
+                    res = eval(str(in_data[i])+self.formu)
+                    
+                    self.result.append(res)
+            else:
+                for i in range(len(in_data)):
+                    for c in range(len(Formu_list)):
+                        exec_formu.append(Formu_list[c])
+                        if c < len(col_list):
+                            
+                            exec_formu.append(self.input_Data[col_list[c].upper()][i])
+                    
+                    res = eval("".join(exec_formu))
+                    exec_formu = []
+                    self.result.append(res)
+            # print(self.result)
+            self.eq_res.emit(self.out_col, self.result, 1)
             
             self.close()
 
@@ -227,6 +306,7 @@ class Ui_Equation(QDialog):
             self.cal_by_col()
             return ''
         try:
+
             self.text = self.lineEdit_out2.text()
             self.formu = self.lineEdit_For2.text()
             try:
@@ -238,8 +318,13 @@ class Ui_Equation(QDialog):
                 data = self.input_Data[self.select]
             except:
                 data = [1]
-            self.row_num = len(data)
-            loop_num = data[-1] if data else 1
+            # self.row_num = len(data)
+            
+            try:
+                loop_num = data[self.row_num-1] if data else 1
+            except:
+                loop_num = 1
+
             self.result.append(float(loop_num))
             for i in range(self.out_num):
                 res = eval(str(loop_num) + self.formu)
@@ -255,20 +340,6 @@ class Ui_Equation(QDialog):
             error_dialog.showMessage(str(e))
             error_dialog.exec_()
 
-        
-    def retranslateUi(self, Plot_interface):
-        _translate = QtCore.QCoreApplication.translate
-        Plot_interface.setWindowTitle(_translate("Plot_interface", "Equation"))
-        # self.label_4.setText(_translate("Plot_interface", "Title List:"))
-        self.label_3.setText(_translate("Plot_interface", "Choose your Methods:"))
-        self.label_2.setText(_translate("Plot_interface", "Input Formula:"))
-        self.label.setText(_translate("Plot_interface", "Input Column:"))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page), _translate("Plot_interface", "Created by Column"))
-        self.label_6.setText(_translate("Plot_interface", "Input Formula:"))
-        self.label_out1.setText(_translate("Plot_interface", "Output Column:"))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("Plot_interface", "Created by Cell"))
-        self.label_out2.setText(_translate("Plot_interface", "Number of Output Cells:"))
-    ###
 
 
     def closeall(self):
