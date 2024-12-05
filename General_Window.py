@@ -30,7 +30,12 @@ class general_window(object):
 
     def quit(self):
         self.new_window.close()
-
+    def is_number(self,s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
     def msgbox_info(self, title, text):
         QMessageBox.about(self.new_window, title, text)
 
