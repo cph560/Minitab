@@ -1,5 +1,3 @@
-from pandas.core.dtypes.inference import is_number
-
 from General_Window import  general_window
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -153,11 +151,11 @@ class Histogram_plot(general_window):
         for i, column in enumerate(column_list):  # 数据校验
             plot_data_drop = plot_data[column].dropna()  # 对绘图数据去除nan
             for item in plot_data_drop:
-                if not is_number(item):
+                if not self.is_number(item):
                     data_type[i] = 1
                     break
         if sum(data_type) != len(column_list) and sum(data_type) != 0:
-            QMessageBox.about(self.new_window, 'Error', 'Type mismatch')
+            QMessageBox.about(self.new_window, 'Error', '数据类型不一致')
             return False
         return True
     def open_plot_window(self):
@@ -194,12 +192,12 @@ class Histogram_plot(general_window):
     def quit_plot_window(self):
         self.new_window_plot.close()
 
-    def is_number(self,s):
-        try:
-            float(s)
-            return True
-        except ValueError:
-            return False
+    # def is_number(self,s):
+    #     try:
+    #         float(s)
+    #         return True
+    #     except ValueError:
+    #         return False
     def plot_data(self,stacked=False):
 
         # 设置中文字体
@@ -246,19 +244,18 @@ class Histogram_plot(general_window):
             data_list = []
             labels = []
 
-
-
-
             for i,column in enumerate(column_list):
                 plot_data_drop=plot_data[column].dropna()#对绘图数据去除nan
+
                 result='num'
                 for item in plot_data_drop:
-                    if not is_number(item):
+                    if not self.is_number(item):
                         result='text'
                         break
-                if result=='text':
+
+                if result=='text':#堆叠还有问题
                     counts = pd.Series(plot_data_drop).value_counts()
-                    counts.plot(kind='bar', ax=ax, color=colormap(i), alpha=0.9, label=f'{column}-Bar')
+                    counts.plot(kind='bar', ax=ax, color=colormap(i), alpha=0.9, label=f'{column}-Bar',stacked=stacked)
 
                 else:#需要优化，1.归一化问题 2. 数据类型问题
                     min_val = min(min_val, plot_data_drop.min())
@@ -276,6 +273,8 @@ class Histogram_plot(general_window):
 
                 if self.distribution_set:
                     fit_equations = {}
+                    static_result={}
+
                     for i, column in enumerate(column_list):
                         plot_data_drop = plot_data[column].dropna()
                         mu, std = norm.fit(plot_data_drop)
@@ -285,13 +284,16 @@ class Histogram_plot(general_window):
                         mu_formatted = f"{mu:.4g}"
                         std_formatted = f"{std:.4g}"
                         # 保存拟合线方程
+                        static_result[column] = f'\nMean: {mu_formatted}, Std: {std_formatted}'
                         fit_equation = f"f(x) = (1 / ({std_formatted} * sqrt(2π))) * exp(-(x - {mu_formatted})^2 / (2 * {std_formatted}^2))"
                         fit_equations[column] = fit_equation
                     self.result_window.textBrowser.setText('')
                     # 构建完整的 HTML 字符串
                     html_content = ""
                     for column, equation in fit_equations.items():
-                        html_content += f"拟合线方程 ({column}): {equation}<br>"
+                        html_content += f"Equation - {column}: {equation}<br>"
+                        html_content += f"{static_result[column]}<br>"
+
                     self.result_window.textBrowser.setHtml(html_content)
             ax.legend()
             #图标设置

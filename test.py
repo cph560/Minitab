@@ -1,3 +1,4 @@
+
 # -*- coding: GBK -*-
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -9,13 +10,13 @@ import time
 class MyTable(QTableWidget):
     def __init__(self, parent=None):
         super(MyTable, self).__init__(parent)
-        self.setWindowTitle("¸÷¸öÊÐ³¡±ÈÌØ±ÒÊµÊ±ÐÐÇé")  # ÉèÖÃ±í¸ñÃû³Æ
-        self.setWindowIcon(QIcon("ok.png"))  # ÉèÖÃÍ¼±ê£¨Í¼Æ¬Òª´æÔÚ£©
-        self.resize(600, 200)  # ÉèÖÃ±í¸ñ³ß´ç£¨ÕûÌå´óÐ¡£©
-        self.setColumnCount(5)  # ÉèÖÃÁÐÊý
-        self.setRowCount(5)  # ÉèÖÃÐÐÊý
-        # self.setColumnWidth(0, 200)  # ÉèÖÃÁÐ¿í(µÚ¼¸ÁÐ£¬ ¿í¶È)
-        # self.setRowHeight(0, 100)  # ÉèÖÃÐÐ¸ß(µÚ¼¸ÐÐ£¬ ÐÐ¸ß)
+        self.setWindowTitle("ï¿½ï¿½ï¿½ï¿½ï¿½Ð³ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ÊµÊ±ï¿½ï¿½ï¿½ï¿½")  # ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        self.setWindowIcon(QIcon("ok.png"))  # ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ê£¨Í¼Æ¬Òªï¿½ï¿½ï¿½Ú£ï¿½
+        self.resize(600, 200)  # ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ß´ç£¨ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½
+        self.setColumnCount(5)  # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        self.setRowCount(5)  # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        # self.setColumnWidth(0, 200)  # ï¿½ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½(ï¿½Ú¼ï¿½ï¿½Ð£ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        # self.setRowHeight(0, 100)  # ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½(ï¿½Ú¼ï¿½ï¿½Ð£ï¿½ ï¿½Ð¸ï¿½)
      
         column_name = [
             'ETH/BIC',
@@ -24,7 +25,7 @@ class MyTable(QTableWidget):
             'column3',
             'column4',
         ]
-        self.setHorizontalHeaderLabels(column_name)  # ÉèÖÃÁÐÃû³Æ
+        self.setHorizontalHeaderLabels(column_name)  # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         row_name = [
             'binance',
             'okex',
@@ -32,16 +33,16 @@ class MyTable(QTableWidget):
             'bittrex',
             'bithumb',
         ]
-        self.setVerticalHeaderLabels(row_name)  # ÉèÖÃÐÐÃû³Æ
+        self.setVerticalHeaderLabels(row_name)  # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  
     def update_item_data(self, data):
-        """¸üÐÂÄÚÈÝ"""
-        self.setItem(0, 1, QTableWidgetItem(data)) # ÉèÖÃ±í¸ñÄÚÈÝ(ÐÐ£¬ ÁÐ) ÎÄ×Ö
+        """ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"""
+        self.setItem(0, 1, QTableWidgetItem(data)) # ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ð£ï¿½ ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½
  
  
 class UpdateData(QThread):
-    """¸üÐÂÊý¾ÝÀà"""
-    update_date = pyqtSignal(str)  # pyqt5 Ö§³Öpython3µÄstr£¬Ã»ÓÐQstring
+    """ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"""
+    update_date = pyqtSignal(str)  # pyqt5 Ö§ï¿½ï¿½python3ï¿½ï¿½strï¿½ï¿½Ã»ï¿½ï¿½Qstring
 
 
     def run(self):
@@ -49,7 +50,7 @@ class UpdateData(QThread):
         while True:
             localtime = time.localtime(time.time())
             localtime = time.strftime("%Y-%m-%d %H:%M:%S", localtime)
-            self.update_date.emit(localtime)  # ·¢ÉäÐÅºÅ
+            self.update_date.emit(localtime)  # ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½
             time.sleep(1)
  
  
@@ -58,21 +59,22 @@ if __name__ == '__main__':
     result = eval(expr)
     print("C23+C56".lower())
     
-    print(result)  # Êä³ö£º8.5
-    # ÊµÀý»¯±í¸ñ
+    print(result)  # ï¿½ï¿½ï¿½ï¿½ï¿½8.5
+    # Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     app = QApplication(sys.argv)
     myTable = MyTable()
-    # Æô¶¯¸üÐÂÏß³Ì
+    # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½
     update_data_thread = UpdateData()
-    update_data_thread.update_date.connect(myTable.update_item_data)  # Á´½ÓÐÅºÅ
+    update_data_thread.update_date.connect(myTable.update_item_data)  # ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½
     update_data_thread.start()
 
-    # ÏÔÊ¾ÔÚÆÁÄ»ÖÐÑë
-    desktop = QApplication.desktop()  # »ñÈ¡×ø±ê
+    # ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½
+    desktop = QApplication.desktop()  # ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
     x = (desktop.width() - myTable.width()) // 2
     y = (desktop.height() - myTable.height()) // 2
-    myTable.move(x, y)  # ÒÆ¶¯
+    myTable.move(x, y)  # ï¿½Æ¶ï¿½
  
-    # ÏÔÊ¾±í¸ñ
+    # ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
     myTable.show()
     app.exit(app.exec_())
+
