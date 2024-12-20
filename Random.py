@@ -303,74 +303,74 @@ class Random_interface(QDialog):
                     self.results = random_data
                 elif self.select == "Normal Distribution":
                     # 生成正态分布的随机数
-                    loc = int(self.lineEdit_2.text())
-                    scale = int(self.lineEdit_3.text())
+                    loc = float(self.lineEdit_2.text())
+                    scale = float(self.lineEdit_3.text())
                     normal_data = np.random.normal(loc, scale, self.size)
                     self.results = normal_data
                 elif self.select == "Lognormal Distribution":
                     # 生成对数正态分布的随机数
-                    mean = int(self.lineEdit_2.text())
-                    sigma = int(self.lineEdit_3.text())
+                    mean = float(self.lineEdit_2.text())
+                    sigma = float(self.lineEdit_3.text())
                     lognormal_data = np.random.lognormal(mean, sigma, self.size)
                     self.results = lognormal_data
                 elif self.select == "Weibull Distribution":
                     # 生成威布尔分布的随机数
-                    a = int(self.lineEdit_2.text())
+                    a = float(self.lineEdit_2.text())
                     weibull_data = np.random.weibull(a, self.size)
                     self.results = weibull_data
                 elif self.select == "Standard_F Distribution":
                     # 生成F分布的随机数
-                    dfnum = int(self.lineEdit_2.text())
-                    dfden = int(self.lineEdit_3.text())
+                    dfnum = float(self.lineEdit_2.text())
+                    dfden = float(self.lineEdit_3.text())
                     f_data = np.random.f(dfnum, dfden, self.size)
                     self.results = f_data
                 elif self.select == "Standard_T Distribution":
                     # 生成T分布的随机数
-                    df = int(self.lineEdit_2.text())
+                    df = float(self.lineEdit_2.text())
                     t_data = np.random.standard_t(df, self.size)
                     self.results = t_data
                 elif self.select == "Binomial Distribution":
                     # 生成二项分布的随机数
-                    n = int(self.lineEdit_2.text())
-                    p = int(self.lineEdit_3.text())
+                    n = float(self.lineEdit_2.text())
+                    p = float(self.lineEdit_3.text())
                     binomial_data = np.random.binomial(n, p, self.size)
                     self.results = binomial_data
                 elif self.select == "Poisson Distribution":
                     # 生成泊松分布的随机数
-                    lam = int(self.lineEdit_2.text())
+                    lam = float(self.lineEdit_2.text())
                     poisson_data = np.random.poisson(lam, self.size)
                     self.results = poisson_data
                 elif self.select == "Exponential Distribution":
                     # 生成指数分布的随机数
-                    scale = int(self.lineEdit_2.text())
+                    scale = float(self.lineEdit_2.text())
                     exponential_data = np.random.exponential(scale, self.size)
                     self.results = exponential_data
                 elif self.select == "Uniform Distribution":
                     # 生成均匀分布的随机数
-                    low = int(self.lineEdit_2.text())
-                    high = int(self.lineEdit_3.text())
+                    low = float(self.lineEdit_2.text())
+                    high = float(self.lineEdit_3.text())
                     uniform_data = np.random.uniform(low, high, self.size)
                     self.results = uniform_data
                 elif self.select == "Chisquare Distribution":
                     # 生成卡方分布的随机数
-                    df = int(self.lineEdit_2.text())
+                    df = float(self.lineEdit_2.text())
                     chisquare_data = np.random.chisquare(df, self.size)
                     self.results = chisquare_data
                 elif self.select == "Beta":
                     # 生成Beta分布的随机数
-                    a = int(self.lineEdit_2.text())
-                    b = int(self.lineEdit_3.text())
+                    a = float(self.lineEdit_2.text())
+                    b = float(self.lineEdit_3.text())
                     beta_data = np.random.beta(a, b, self.size)
                     self.results = beta_data
                 elif self.select == "Gamma":
                     # 生成Gamma分布的随机数
-                    shape = int(self.lineEdit_2.text())
-                    scale = int(self.lineEdit_3.text())
+                    shape = float(self.lineEdit_2.text())
+                    scale = float(self.lineEdit_3.text())
                     gamma_data = np.random.gamma(shape, scale, self.size)
                     self.results = gamma_data
                 elif self.select == "Pareto Distribution":
                     # 生成Pareto分布的随机数
-                    a = int(self.lineEdit_2.text())
+                    a = float(self.lineEdit_2.text())
                     pareto_data = np.random.pareto(a, self.size)
                     self.results = pareto_data
                 elif self.select == "Cauchy Distribution":
