@@ -18,7 +18,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>131</width>
+     <width>141</width>
      <height>191</height>
     </rect>
    </property>
@@ -68,7 +68,7 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>170</x>
      <y>10</y>
      <width>47</width>
      <height>13</height>
@@ -81,9 +81,9 @@
   <widget class="QTextEdit" name="text_input">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>170</x>
      <y>30</y>
-     <width>311</width>
+     <width>301</width>
      <height>101</height>
     </rect>
    </property>
@@ -105,7 +105,7 @@
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>140</y>
+     <y>150</y>
      <width>121</width>
      <height>31</height>
     </rect>

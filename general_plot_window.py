@@ -12,13 +12,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Dialog(object):
-    def __init__(self, type):
-        self.type = type
+    def __init__(self,type):
+        self.type=type
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(477, 243)
         self.listView = QtWidgets.QListView(Dialog)
-        self.listView.setGeometry(QtCore.QRect(10, 10, 131, 191))
+        self.listView.setGeometry(QtCore.QRect(10, 10, 141, 191))
         self.listView.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listView.setObjectName("listView")
         self.select_btn = QtWidgets.QPushButton(Dialog)
@@ -31,16 +31,16 @@ class Ui_Dialog(object):
         self.cancel_btn.setGeometry(QtCore.QRect(340, 200, 101, 31))
         self.cancel_btn.setObjectName("cancel_btn")
         self.label = QtWidgets.QLabel(Dialog)
-        self.label.setGeometry(QtCore.QRect(160, 10, 47, 13))
+        self.label.setGeometry(QtCore.QRect(170, 10, 47, 13))
         self.label.setObjectName("label")
         self.text_input = QtWidgets.QTextEdit(Dialog)
-        self.text_input.setGeometry(QtCore.QRect(160, 30, 311, 101))
+        self.text_input.setGeometry(QtCore.QRect(170, 30, 301, 101))
         self.text_input.setObjectName("text_input")
         self.clear_btn = QtWidgets.QPushButton(Dialog)
         self.clear_btn.setGeometry(QtCore.QRect(400, 8, 71, 21))
         self.clear_btn.setObjectName("clear_btn")
         self.setting_btn = QtWidgets.QPushButton(Dialog)
-        self.setting_btn.setGeometry(QtCore.QRect(260, 140, 121, 31))
+        self.setting_btn.setGeometry(QtCore.QRect(260, 150, 121, 31))
         font = QtGui.QFont()
         font.setPointSize(8)
         self.setting_btn.setFont(font)

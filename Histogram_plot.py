@@ -1,21 +1,18 @@
 from General_Window import  general_window
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QStandardItemModel, QStandardItem,QColor, QBrush
+from PyQt5 import QtWidgets
 import numpy as np
 from histogram_setting import Ui_Dialog as setting_window
 import matplotlib.pyplot as plt
-
 import sys
 import pandas as pd
 from matplotlib.ticker import MaxNLocator
 from scipy.stats import norm
-import base64
-from io import BytesIO
+
 
 
 class Histogram_plot(general_window):
-    def __init__(self,data):
+    def __init__(self,data,title,type):
         super().__init__('Histogram')
         self.plot.ok_btn.clicked.connect(self.open_plot_window)
         self.plot.select_btn.clicked.connect(self.add_to_column_list)
@@ -24,12 +21,18 @@ class Histogram_plot(general_window):
         self.distribution_set = True
         self.bin_set='Auto'
         self.stacked_set= False
-        self.load_data(data)#载入数据
+        self.load_data(data,title,type)#载入数据
         self.open_windows = []
         self.open_windows.append(self.new_window)
         self.minimum_bins=8
         self.custom_bins = 8
         self.output_plain_text=''
+        self.title_matrix = title
+        self.swapped_title_matrix = {v: k for k, v in self.title_matrix.items()}
+        self.type_matrix = type
+
+        self.open_windows = []
+        self.open_windows.append(self.new_window)
     def label_change(self):
         if self.setting.Btn_Bin_Autofit.isChecked():
             self.setting.label_bins.setText('Minimum Bins')
@@ -61,6 +64,7 @@ class Histogram_plot(general_window):
             self.setting.Btn_Bin_Custom.setChecked(True)
             self.setting.lineEdit.setText(str(self.custom_bins))
 
+        self.open_windows.append(self.new_window_setting)
 
 
         # self.windows.append(self.new_window_setting)
@@ -107,13 +111,20 @@ class Histogram_plot(general_window):
     def copy_result(self):
         import pyperclip
         pyperclip.copy(self.output_plain_text)
+        QMessageBox.about(self.new_window_plot,'提示','已复制到剪贴板')
     def data_calibration(self):
         column_text = self.plot.text_input.toPlainText()
+
         #校验列数量
         if not column_text:
             column_list = []
         else:
             column_list = column_text.split(' ')
+            for i, column in enumerate(column_list):
+                if column in self.swapped_title_matrix:
+                    column_list[i] = self.swapped_title_matrix[column]
+
+
         if len(column_list) == 0:
             QMessageBox.about(self.new_window,'Error', '没有选取列，请检查')
             return False
@@ -122,6 +133,7 @@ class Histogram_plot(general_window):
             return False
         #校验列有效性
         column_titles = self.table_raw_data.columns.tolist()
+
         # 重复性校验
         count_dict = {}
         for column in column_list:
@@ -210,7 +222,9 @@ class Histogram_plot(general_window):
 
         column_text = self.plot.text_input.toPlainText()
         column_list = column_text.split(' ')
-
+        for i, column in enumerate(column_list):
+            if column!='' and column in self.swapped_title_matrix:
+                column_list[i] = self.swapped_title_matrix[column]
 
         for i in range(len(column_list) - 1, -1, -1):
             if column_list[i] == "":
@@ -218,7 +232,15 @@ class Histogram_plot(general_window):
         '''分割位置，single plt/multiple'''
         try:
             #确定y轴标题
-            title_list = ", ".join(column_list)
+
+            title_list = []
+            for x in column_list:
+                if self.title_matrix[x] != '':
+                    title_list.append(self.title_matrix[x])
+                else:
+                    title_list.append(x)
+            label_y = ','.join(title_list)
+
             plot_data = self.table_raw_data.loc[:, column_list].copy()
             # 使用斯特奇斯规则确定bin的数量
             if self.bin_set == 'Auto':
@@ -237,7 +259,7 @@ class Histogram_plot(general_window):
             # 设置字体
             ax.set_xlabel('X-axis', fontdict={'family': 'serif', 'size': 12, 'weight': 'normal'})
             ax.set_ylabel('Y-axis', fontdict={'family': 'serif', 'size': 12, 'weight': 'normal'})
-            ax.set_title('Histogram of %s'%title_list, fontdict={'family': 'serif', 'size': 14, 'weight': 'bold'})
+            ax.set_title('Histogram of %s'%label_y, fontdict={'family': 'serif', 'size': 14, 'weight': 'bold'})
 
             min_val = float('inf')
             max_val = float('-inf')
@@ -247,24 +269,14 @@ class Histogram_plot(general_window):
             for i,column in enumerate(column_list):
                 plot_data_drop=plot_data[column].dropna()#对绘图数据去除nan
 
-                result='num'
-                for item in plot_data_drop:
-                    if not self.is_number(item):
-                        result='text'
-                        break
+                min_val = min(min_val, plot_data_drop.min())
+                max_val = max(max_val, plot_data_drop.max())
+                data_list.append(plot_data_drop)
+                if self.title_matrix[column]!='':
+                    labels.append(f'{self.title_matrix[column]}')
+                else:
+                    labels.append(column)
 
-                if result=='text':#堆叠还有问题
-                    counts = pd.Series(plot_data_drop).value_counts()
-                    counts.plot(kind='bar', ax=ax, color=colormap(i), alpha=0.9, label=f'{column}-Bar',stacked=stacked)
-
-                else:#需要优化，1.归一化问题 2. 数据类型问题
-                    min_val = min(min_val, plot_data_drop.min())
-                    max_val = max(max_val, plot_data_drop.max())
-                    data_list.append(plot_data_drop)
-                    if self.distribution_set:
-                        labels.append(f'{column}-Histogram')
-                    else:
-                        labels.append(f'{column}')
 
             if data_list:
                 ax.hist(data_list, bins=bin_count, density=True, alpha=0.9,
@@ -276,30 +288,39 @@ class Histogram_plot(general_window):
                     static_result={}
 
                     for i, column in enumerate(column_list):
+                        col_label=column
+                        if self.title_matrix[column]!='':
+                            col_label=self.title_matrix[column]
                         plot_data_drop = plot_data[column].dropna()
                         mu, std = norm.fit(plot_data_drop)
                         x = np.linspace(min_val, max_val, 100)
                         y = norm.pdf(x, mu, std)
-                        ax.plot(x, y, '-.', color=colormap2(i), linewidth=2, label=f'{column}-Fit')
+                        ax.plot(x, y, '-.', color=colormap2(i), linewidth=2, label=f'{col_label}-Fit')
                         mu_formatted = f"{mu:.4g}"
                         std_formatted = f"{std:.4g}"
+                        Data_count=len(plot_data_drop)
                         # 保存拟合线方程
-                        static_result[column] = f'\nMean: {mu_formatted}, Std: {std_formatted}'
+                        static_result[col_label] = f'\nMean: {mu_formatted}, Std: {std_formatted},Count:{Data_count}'
                         fit_equation = f"f(x) = (1 / ({std_formatted} * sqrt(2π))) * exp(-(x - {mu_formatted})^2 / (2 * {std_formatted}^2))"
-                        fit_equations[column] = fit_equation
+                        fit_equations[col_label] = fit_equation
                     self.result_window.textBrowser.setText('')
                     # 构建完整的 HTML 字符串
                     html_content = ""
-                    for column, equation in fit_equations.items():
-                        html_content += f"Equation - {column}: {equation}<br>"
-                        html_content += f"{static_result[column]}<br>"
+                    for col_label, equation in fit_equations.items():
+                        html_content += f"Equation - {col_label}: {equation}<br>"
+                        html_content += f"{static_result[col_label]}<br>"
+                    plain_content=''
+                    for col_label, result in fit_equations.items():
+                        plain_content += f"Equation - {col_label}: {equation}\n"
+                        plain_content += f"{static_result[col_label]}\n"
 
                     self.result_window.textBrowser.setHtml(html_content)
+                    self.output_plain_text=plain_content
             ax.legend()
             #图标设置
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
             # 添加标题和标签
-            ax.set_title('Histogram of %s' % title_list)
+            ax.set_title('Histogram of %s' % label_y)
             ax.set_xlabel('Value')
             ax.set_ylabel('Frequency')
             self.canvas.draw()
@@ -308,23 +329,23 @@ class Histogram_plot(general_window):
             print(e)
             QMessageBox.about(self.new_window, 'Error', str(e))
 
-    def latex_to_image(self, equation):
-        fig, ax = plt.subplots()
-        ax.text(0.5, 0.5, f'${equation}$', fontsize=20, ha='center', va='center')
-        ax.axis('off')
-
-        buf = BytesIO()
-        fig.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
-        buf.seek(0)
-
-        # 将图像数据转换为 base64 编码的字符串
-        image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-
-        # 返回包含 base64 编码图像的 HTML 标签
-        return f'<img src="data:image/png;base64,{image_base64}">'
+    # def latex_to_image(self, equation):
+    #     fig, ax = plt.subplots()
+    #     ax.text(0.5, 0.5, f'${equation}$', fontsize=20, ha='center', va='center')
+    #     ax.axis('off')
+    #
+    #     buf = BytesIO()
+    #     fig.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+    #     buf.seek(0)
+    #
+    #     # 将图像数据转换为 base64 编码的字符串
+    #     image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    #
+    #     # 返回包含 base64 编码图像的 HTML 标签
+    #     return f'<img src="data:image/png;base64,{image_base64}">'
 
 if __name__ == '__main__':
-    columns = ['Size', 'Amount', 'C3', 'Test', 'C5']
+    columns = ['C1', 'C2', 'C3', 'C4', 'C5']
     # 定义数据
     data = [
         [19.0, 14.0, 'AA', 'DD', 3.0],
@@ -336,11 +357,13 @@ if __name__ == '__main__':
         [9.0, 8.0, 'CC', 'CC', 18.0],
         [5.0, 15.0, 'AA', 'CC', 9.0]
     ]
+    title_matrix = {'C1': 'Size', 'C2': 'Amount', 'C3': '', 'C4': 'Test', 'C5': ''}
+    type_matrix = {'C1': '', 'C2': '', 'C3': 'T', 'C4': 'T', 'C5': ''}
 
     # 创建DataFrame
     df = pd.DataFrame(data, columns=columns)
     # df=pd.DataFrame(np.random.randn(1000),columns=['1'])
     # df['2']=np.random.randn(1000)
     app = QtWidgets.QApplication(sys.argv)
-    main_window = Histogram_plot(df)
+    main_window = Histogram_plot(df,title_matrix,type_matrix)
     app.exec()
