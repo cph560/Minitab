@@ -1,20 +1,20 @@
 # coding=gbk
-from PyQt5.QtWidgets import QApplication,QMenu
+from PyQt5.QtWidgets import QApplication,QMenu,QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
 from PyQt5 import  QtWidgets
 from PyQt5.Qt import QTableWidgetItem
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor, QBrush
 
+
 # 定义PYQT表格操作
 class MyTableWidget(QtWidgets.QTableWidget):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs,):
         super().__init__(*args, **kwargs)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         # 创建QMenu信号事件
         self.customContextMenuRequested.connect(self.showMenu)
         self.contextMenu = QMenu(self)
-        
         self.CP = self.contextMenu.addAction('Copy')
         self.JQ = self.contextMenu.addAction('Cut')
         self.NT = self.contextMenu.addAction('Paste')
@@ -35,23 +35,37 @@ class MyTableWidget(QtWidgets.QTableWidget):
         self.init='no'
     def on_item_changed(self, item):
         if self.init=='yes':
-            self.fill_above_with_zeros(item)
+            self.fill_space_check_title(item)
 
-    def fill_above_with_zeros(self,item):
+
+
+    def fill_space_check_title(self,item):
         row = item.row()
         column = item.column()
         value = item.text()
+        if row==0:
+            if value!='' and value!=None:
+                for i in range(self.columnCount()):
+                    if i == column:
+                        continue
+                    if self.item(0, i).text() == value:
+                        message = "Duplicate title name:%s,please revise."%value
+                        QMessageBox.warning(self, "Duplicates Found", message)
+                        color = Qt.lightGray
+                        item = ColorDelegate(color)
+                        self.setItem(row, column, item)
 
-        # 检查输入的值是否为数字
-        if value.isdigit():
-            pass  # 转换为整数
-        # 填充上方所有列中的空值为0
-        for r in range(row - 1, 0, -1):
-            upper_item = self.item(r, column)
-            if upper_item is None or upper_item.text() == "":
-                self.setItem(r, column, QTableWidgetItem("0"))
         else:
-            return  # 如果不是数字，不执行填充操作
+            # 检查输入的值是否为数字
+            if value.isdigit():
+                pass  # 转换为整数
+            # 填充上方所有列中的空值为0
+            for r in range(row - 1, 0, -1):
+                upper_item = self.item(r, column)
+                if upper_item is None or upper_item.text() == "":
+                    self.setItem(r, column, QTableWidgetItem("0"))
+            else:
+                return  # 如果不是数字，不执行填充操作
 
 
     #删除Table Text
@@ -332,6 +346,17 @@ class MyTableWidget(QtWidgets.QTableWidget):
         # 菜单显示前,将它移动到鼠标点击的位置
         self.contextMenu.exec_(QCursor.pos())  # 在鼠标位置显示
 
+    def key_Enter(self):
+        current_row = self.selectedItems()[0].row()
+        current_col = self.selectedItems()[0].column()
+
+        temp_col = current_col
+        if current_row != self.rowCount() :
+            temp_row = current_row+1
+        else:
+            temp_row=current_row
+
+        self.setCurrentCell(temp_row, temp_col)
 
 
     def keyPressEvent(self, event):  # 重写键盘监听事件
@@ -344,6 +369,8 @@ class MyTableWidget(QtWidgets.QTableWidget):
             self.paste()
         elif(event.key() == Qt.Key_Delete):
             self.Delete()
+        elif(event.key()==Qt.Key_Return):
+            self.key_Enter()
         # elif (event.key() == Qt.Key_Z) and QApplication.keyboardModifiers() == Qt.ControlModifier:
         #     self.paste()
         else:

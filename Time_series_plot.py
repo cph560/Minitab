@@ -1,19 +1,14 @@
 from General_Window import  general_window
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QStandardItemModel, QStandardItem,QColor, QBrush
-import numpy as np
+from PyQt5 import QtWidgets
 from time_series_setting import Ui_Dialog as time_setting
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import MultipleLocator
-from matplotlib.ticker import FormatStrFormatter
-from matplotlib.font_manager import FontProperties
+from matplotlib.pyplot import MultipleLocator, title
 import sys
-import seaborn as sns
 import pandas as pd
 
 class Time_series_plot(general_window):
-    def __init__(self,data):
+    def __init__(self,data,title,type):
         super().__init__('Time_series_plot')
         self.plot.setting_btn.clicked.connect(self.open_setting)
         self.plot.ok_btn.clicked.connect(self.plot_data)
@@ -21,8 +16,14 @@ class Time_series_plot(general_window):
         self.plot.listView.doubleClicked.connect(self.add_to_column_list)
         self.x_custom=''
         self.x_type='Seq'
-        self.load_data(data)#载入数据
+        self.load_data(data,title,type)#载入列表数据
         self.load_status=False
+        self.title_matrix=title
+        self.swapped_title_matrix = {v: k for k, v in self.title_matrix.items()}
+        self.type_matrix=type
+        self.open_windows = []
+        self.open_windows.append(self.new_window)
+
 
     def open_setting(self):
         self.new_window_setting = QtWidgets.QWidget()
@@ -40,7 +41,7 @@ class Time_series_plot(general_window):
         self.setting.Btn_OK.clicked.connect(self.get_setting)
         self.setting.Btn_X_Sequence.toggled.connect(self.change_x_column_visible)
         self.setting.Btn_X_Specific.toggled.connect(self.change_x_column_visible)
-        # self.windows.append(self.new_window_setting)
+        self.open_windows.append(self.new_window_setting)
 
     def change_x_column_visible(self, checked):
         # 根据 Btn_X_Specific 的状态设置 x_column 的可见性
@@ -53,14 +54,15 @@ class Time_series_plot(general_window):
         if self.setting.Btn_X_Sequence.isChecked():
             self.x_type = 'Seq'
         elif self.setting.Btn_X_Specific.isChecked():
-            self.x_type = 'Cusomized'
-            self.x_custom=self.setting.X_column.currentText()
+            self.x_type = 'Customized'
+            self.x_custom=self.setting.X_column.currentText().split(" ")[0]
         self.new_window_setting.close()
     def load_data_column_list(self):
         self.setting.X_column.clear()  # 清空现有的选项
-        for row in range(self.model.rowCount()):
-            item = self.model.item(row)
-            self.setting.X_column.addItem(item.text())
+        column_list=self.get_col_list_by_type(self.table_raw_data,self.title_matrix,self.type_matrix,['T','D',''])
+        for i, column in enumerate(column_list):
+            item = column_list[i].replace("\t"," ")
+            self.setting.X_column.addItem(item)
     def data_calibration(self):
         column_text = self.plot.text_input.toPlainText()
         #校验列数量
@@ -68,6 +70,10 @@ class Time_series_plot(general_window):
             column_list = []
         else:
             column_list = column_text.split(' ')
+            for i, column in enumerate(column_list):
+                if column in self.swapped_title_matrix:
+                    column_list[i] = self.swapped_title_matrix[column]
+
         if len(column_list) == 0:
             QMessageBox.about(self.new_window,'Error', '没有选取列，请检查')
             return False
@@ -117,84 +123,93 @@ class Time_series_plot(general_window):
             return
         column_text = self.plot.text_input.toPlainText()
         column_list = column_text.split(' ')
+        for i, column in enumerate(column_list):
+            if column!='' and column in self.swapped_title_matrix:
+                column_list[i] = self.swapped_title_matrix[column]
 
         plt.rcParams['font.sans-serif'] = ['SimHei']  # 'SimHei'是黑体的意思
         plt.rcParams['axes.unicode_minus'] = False  # 解决负号'-'显示为方块的问题
 
-
-
         marker_list = [".", "s", "^", "D", 'p', '*', 'h', 'H', "<", ">"]
         marker_size_list = [7, 3, 5, 5, 5, 5, 5, 5, 5, 5]
 
-        for i in range(len(column_list) - 1, -1, -1):
-            if column_list[i] == "":
-                del column_list[i]
 
-        try:
-            title_list = ""
-            for x in column_list:
-                if title_list != "":
-                    title_list += ','
-                title_list += x
-
-            if len(column_list) ==0:
-                self.msgbox_info('Error', '没有选取列，请检查')
-                return
-
-            label_y = title_list
-
-            plot_data = self.table_raw_data.loc[:, column_list].copy()
-            if self.x_type=='Seq':
-                plot_data.insert(0, 'order', list(range(1, len(plot_data) + 1)))
+        # try:
+        title_list = []
+        for x in column_list:
+            if self.title_matrix[x]!='':
+                title_list.append(self.title_matrix[x])
             else:
-                plot_data['order'] = self.table_raw_data[self.x_custom].copy()
-            # plot_data = plot_data.fillna('')
+                title_list.append(x)
+        label_y = ','.join(title_list)
 
-            '''完成摘取数据，开始画图'''
+        plot_data = self.table_raw_data.loc[:, column_list].copy()
+        if self.x_type=='Seq':
+            plot_data.insert(0, 'order', list(range(1, len(plot_data) + 1)))
+        else:
+            plot_data['order'] = self.table_raw_data[self.x_custom].copy()
+        # plot_data = plot_data.fillna('')
 
-            for i in range(0, plot_data.shape[1]):
-                if plot_data.columns[i]!='order':
-                    x=plot_data['order']
-                    y= plot_data.iloc[:, i]
-                    plt.plot(x,y, marker=marker_list[(i - 1) % len(marker_list)],
-                         label=plot_data.columns[i],markersize=marker_size_list[(i - 1) % len(marker_size_list)])
+        '''完成摘取数据，开始画图'''
+        line_counter=0
+        for i in range(0, plot_data.shape[1]):
+            if plot_data.columns[i]!='order':
+                x= plot_data['order'].dropna()
+                y= plot_data.iloc[:, i].dropna()
+                plt.plot(x,y, marker=marker_list[(line_counter) % len(marker_list)],
+                     label=plot_data.columns[i],markersize=marker_size_list[line_counter % len(marker_size_list)])
+                line_counter += 1
+        plt.title('Time Series Plot of %s' % label_y)
+        order_type=''
+        if self.x_type=='Customized':
+            order_type=self.type_matrix[self.x_custom]
 
-            plt.title('Time Series Plot of %s' % title_list)
+        if order_type=='':
+            data_interval = max(plot_data['order']) - min(plot_data['order'])
+            data_interval = max(data_interval // 8, 1)
+        elif order_type=="T" or order_type=="D":
+            data_interval = len(plot_data['order'].dropna())
+            data_interval = max(data_interval // 8, 1)
+        else:
+            data_interval=1
+        x_major_locator = MultipleLocator(data_interval)
 
-            data_interval = max(plot_data['order'])-min(plot_data['order'])
-            data_interval=max(data_interval//8,1)
-            x_major_locator = MultipleLocator(data_interval)
-            ax = plt.gca()  # 实例化坐标轴
-            ax.xaxis.set_major_locator(x_major_locator)  # 把x轴的主刻度设置为1的倍数
-            if self.x_type=='Seq':
-                xlabel='Index'
-            else:
+        ax = plt.gca()  # 实例化坐标轴
+        ax.xaxis.set_major_locator(x_major_locator)  # 把x轴的主刻度设置为1的倍数
+        if self.x_type=='Seq':
+            xlabel='Index'
+        else:
+            if self.title_matrix[self.x_custom]=='':
                 xlabel=self.x_custom
-            plt.xlabel(xlabel)
-            plt.ylabel(label_y)
-            plt.show()
+            else:
+                xlabel=self.title_matrix[self.x_custom]
+        plt.xlabel(xlabel)
+        plt.ylabel(label_y)
+        plt.show()
 
-        except Exception as e:
-
-            self.msgbox_info('Error', str(e))
+        # except Exception as e:
+        #
+        #     self.msgbox_info('Error', str(e))
 
 
 if __name__ == '__main__':
-    columns = ['Size', 'Amount', 'C3', 'Test', 'C5']
+    columns = ['C1', 'C2', 'C3', 'C4', 'C5','C6']
     # 定义数据
     data = [
-        [19.0, 14.0, 9.0, 12.0, 1.0],
-        [3.0, 16.0, 5.0, 20.0, 3.0],
-        [19.0, 5.0, 14.0, 15.0, 5.0],
-        [18.0, 10.0, 5.0, 13.0, 8.0],
-        [6.0, 14.0, 12.0, 10.0, 10.0],
-        [0.0, 0.0, 0.0, 0.0, 11.0],
-        [9.0, 8.0, 5.0, 11.0, 18.0],
-        [5.0, 15.0, 16.0, 5.0, 19.0]
+        [19.0, 14.0, 9.0, 12.0, 1.0,'test1'],
+        [3.0, 16.0, 5.0, 20.0, 3.0,'test2'],
+        [19.0, 5.0, 14.0, 15.0, 5.0,'test3'],
+        [18.0, 10.0, 5.0, 13.0, 8.0,'test4'],
+        [6.0, 14.0, 12.0, 10.0, 10.0,'test5'],
+        [0.0, 0.0, 0.0, 0.0, 11.0,'test6'],
+        [9.0, 8.0, 5.0, 11.0, 18.0,'test7'],
+        [5.0, 15.0, 16.0, 5.0, 19.0,'test8']
     ]
+    title_matrix= {'C1':'Size','C2':'Amount','C3':'','C4':'Test','C5':'','C6':'test1'}
+    type_matrix= {'C1':'','C2':'','C3':'','C4':'','C5':'','C6':'T'}
 
     # 创建DataFrame
     df = pd.DataFrame(data, columns=columns)
     app = QtWidgets.QApplication(sys.argv)
-    main_window = Time_series_plot(df)
+    main_window = Time_series_plot(df,title_matrix,type_matrix)
     app.exec()

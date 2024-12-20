@@ -1,33 +1,28 @@
 from General_Window import general_window
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor, QBrush
+from PyQt5 import QtWidgets
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import numpy as np
 from Scatter_plot_setting import Ui_Dialog as setting
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import MultipleLocator
-from matplotlib.ticker import FormatStrFormatter
-from matplotlib.font_manager import FontProperties
-from PyQt5.Qt import QTableWidgetItem, QAbstractItemView
+from PyQt5.Qt import QTableWidgetItem
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.ticker import MaxNLocator
-from matplotlib import font_manager
 import pandas as pd
 import sys
 
 
 
 class Scatter_plot(general_window):
-    def __init__(self, data):
+    def __init__(self, data,title,type):
         super().__init__('Scatter_plot')
         self.setting = None
         self.new_window_setting = None
         self.plot.setting_btn.clicked.connect(self.open_setting)
         self.table_raw_data = None
-        self.load_data(data)  #载入数据
-
+        self.load_data(data,title,type)  #载入数据
         self.plot.listView.doubleClicked.connect(self.add_to_column_list)
         self.plot.select_btn.clicked.connect(self.add_to_column_list)
         self.plot.cancel_btn.clicked.connect(self.quit)
@@ -38,22 +33,27 @@ class Scatter_plot(general_window):
                 self.plot.tableWidget.setItem(i, j, QTableWidgetItem(""))
         self.plot.tableWidget.setCurrentCell(0, 0)
         self.draw_list = [1]
+        self.title_matrix = title
+        self.swapped_title_matrix = {v: k for k, v in self.title_matrix.items()}
+        self.type_matrix = type
         self.open_windows = []
         self.open_windows.append(self.new_window)
 
     def msgbox_info(self, title, text):
         QMessageBox.about(self.new_window, title, text)
 
-    def load_data(self, data):
-        self.table_raw_data = data
-        self.model = QStandardItemModel()
-        for col in self.table_raw_data.columns:
-            self.model.appendRow(QStandardItem(str(col)))
-        self.plot.listView.setModel(self.model)
-        self.plot.listView.show()
+    # def load_data(self, data,title_matrix,type_matrix):
+    #     self.table_raw_data = data
+    #     self.model = QStandardItemModel()
+    #     for col in self.table_raw_data.columns:
+    #         self.model.appendRow(QStandardItem(str(col)))
+    #     self.plot.listView.setModel(self.model)
+    #     self.plot.listView.show()
 
     def add_to_column_list(self):
         selected = self.model.item(self.plot.listView.currentIndex().row()).text()
+        parts = selected.split('\t', 1)
+        selected = parts[-1]
         select_row = self.plot.tableWidget.selectedItems()[0].row()
         select_column = self.plot.tableWidget.selectedItems()[0].column()
         item = QTableWidgetItem(selected)
@@ -69,8 +69,8 @@ class Scatter_plot(general_window):
         else:
             next_column = 1
             next_row = select_row
-
         self.plot.tableWidget.setCurrentCell(next_row, next_column)
+
 
     def clear_input(self):
         for i in range(10):  # 初始化
@@ -88,7 +88,12 @@ class Scatter_plot(general_window):
             for j in range(2):
                 data_list.append(self.plot.tableWidget.item(i, j).text())
 
+        for i, column in enumerate(data_list):
+            if column!='' and column in self.swapped_title_matrix:
+                data_list[i] = self.swapped_title_matrix[column]
+
         plot_list = [item for item in data_list if item != '']  # 提取画图列
+
         #校验数据有效性
         for item in plot_list:
             if item not in self.table_raw_data.columns:
@@ -119,12 +124,20 @@ class Scatter_plot(general_window):
             cur+=2
 
             if result:
-                self.msgbox_info('Error', '第 %s 行数据 %s 与 %s 数据长度不一致，请检查'%(str(int((i/2+1))),str(data_list[i]),str(data_list[i + 1])))
+                self.msgbox_info('Error', 'Row %s : %s 与 %s 列数据长度不一致，请检查'%(str(int((i/2+1))),str(data_list[i]),str(data_list[i + 1])))
                 return
-            if data_list[i] not in y_name:
+            if data_list[i]!='':
                 y_name.append(data_list[i])
-            if data_list[i+1] not in x_name:
+            if data_list[i+1]!='':
                 x_name.append(data_list[i + 1])
+
+        for i,x in enumerate(x_name):
+            if self.title_matrix[x]!='' and x in self.title_matrix:
+                x_name[i]=self.title_matrix[x]
+        for i,y in enumerate( y_name):
+            if self.title_matrix[y] !='' and y in self.title_matrix:
+                y_name[i]=self.title_matrix[y]
+
 
         x_axis='X-axis'
         y_axis='Y_axis'
@@ -140,9 +153,6 @@ class Scatter_plot(general_window):
         elif len(y_name)==1:
             y_axis= str(y_name[0])
 
-
-
-        plot_list = [item for item in data_list if item != '']  # 提取画图列
         plot_df = self.table_raw_data[plot_list]  # 提取画图数据
 
         from Result_window import Ui_Plot_window as result_window
@@ -196,7 +206,14 @@ class Scatter_plot(general_window):
             if i + 1 < len(plot_df.columns):
                 x = plot_df.iloc[:, i + 1].dropna(how='all')  # 第i+1列作为x
                 y = plot_df.iloc[:, i].dropna(how='all')  # 第i列作为y-----------------<
-                label = '(%s,%s)' % (plot_df.columns[i], plot_df.columns[i + 1])
+
+                x_name = self.title_matrix[plot_df.columns[i+1]]
+                if x_name=="":
+                    x_name=plot_df.columns[i+1]
+                y_name=self.title_matrix[plot_df.columns[i]]
+                if y_name=="":
+                    y_name=plot_df.columns[i]
+                label = '%s vs %s' % (y_name,x_name)
 
                 ax.scatter(x, y, color=colormap(i), label=label)
 
@@ -300,16 +317,18 @@ class Scatter_plot(general_window):
 
             if coefficient_str.startswith('-'):
                 result+=f' - {abs(coefficient):.2g}'
-                offset=int(1)
+                offset=int(0)
             else:
                 result+=f' + {coefficient:.2g}'
                 offset=int(0)
 
+            mid = term[0][len(coefficient_str) + offset:]
             if term[0][len(coefficient_str) +offset:] != "":
                 if abs(coefficient)==1:
                     result=result[:len(result)-1]
                 else:
                     result+='*'
+
                 result+=f'{term[0][len(coefficient_str)+offset:]}'
             equation_parts.append(result)
         # 去掉第一个加号
@@ -372,7 +391,7 @@ class Scatter_plot(general_window):
             self.setting.checkBox_3.setChecked(False)
 
         self.setting.ok_Btn.clicked.connect(self.get_setting)
-
+        self.open_windows.append(self.new_window_setting)
     def get_setting(self):
         self.draw_list = []
         if self.setting.checkBox_1.isChecked():
@@ -416,11 +435,13 @@ if __name__ == '__main__':
 
     x22 = np.pad(x2, (0, 70), mode='constant', constant_values=np.nan)
     y22 = np.pad(y2, (0, 70), mode='constant', constant_values=np.nan)
-    df = pd.DataFrame({'Size': x1, '天气': y1, 'Time': x22, 'Open': y22})
+    x5 = np.random.rand(100) * 10  # 生成50个随机x值
+    df = pd.DataFrame({'C1': x1, 'C2': y1, 'C3': x22, 'C4': y22,'C5':x5})
 
-    #
+    title_matrix = {'C1': 'Size', 'C2': 'Amount', 'C3': '', 'C4': 'Test','C5':"Wrong"}
+    type_matrix = {'C1': '', 'C2': '', 'C3': '', 'C4': '','C5':'D'}
     # # 创建DataFrame
     # df = pd.DataFrame(data, columns=columns)
     app = QtWidgets.QApplication(sys.argv)
-    main_window = Scatter_plot(df)
+    main_window = Scatter_plot(df,title_matrix,type_matrix)
     app.exec()
