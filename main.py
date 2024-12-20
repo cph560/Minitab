@@ -4,10 +4,10 @@ import sys
 import pandas as pd
 import numpy as np
 from pandas.core.common import temp_setattr
-from tkinter import filedialog
+from tkinter import filedialog, Widget
 import math
 
-#自定义Widget
+# 自定义Widget
 from mytablewidget import MyTableWidget
 from PyQt5.Qt import QTableWidgetItem
 from designer import Ui_GUI
@@ -16,27 +16,25 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor, QBrush
 from PyQt5.QtWidgets import *
 import random
 import re
-import time
 from PyQt5.QtWidgets import QMessageBox
 
 
-
-#主函数
-#除#可修改项以外均为QtDesigner生成
+# 主函数
+# 除#可修改项以外均为QtDesigner生成
 class Ui_Main(Ui_GUI):
     def __init__(self):
         self.windows = []
 
     def setupUi(self, GUI):
         super().setupUi(GUI)
-        Row_Count = 5000  #可修改项
-        Col_Count = 25  #可修改项
-        self.GUI = GUI  #可修改项
+        self.WidgetRowCount = 5000  # 可修改项
+        self.WidgetColCount = 25  # 可修改项
+        self.GUI = GUI  # 可修改项
 
-        self.tableWidget = MyTableWidget(self.centralwidget)  #可修改项
+        self.tableWidget = MyTableWidget(self.centralwidget)  # 可修改项
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(Col_Count)  # 修改项
-        self.tableWidget.setRowCount(Row_Count + 1)  # 修改项
+        self.tableWidget.setColumnCount(self.WidgetColCount)  # 修改项
+        self.tableWidget.setRowCount(self.WidgetRowCount + 1)  # 修改项
         GUI.setCentralWidget(self.tableWidget)
 
         GUI.setObjectName("GUI")
@@ -82,13 +80,14 @@ class Ui_Main(Ui_GUI):
         self.actionLoad.triggered.connect(self.LoadExcel)
         self.actionQuit.triggered.connect(self.closeall)
 
+    def show_message_box(self, title, message, icon):
+        msg_box = QMessageBox(icon, title, message)
+        msg_box.exec_()
     def resize_setting(self):
-        #没做窗口，目前是默认值
-        newRowCount=5000
-        newColumnCount=25
-        self.rebuild(newRowCount+1,newColumnCount)
+        # 没做窗口，目前是默认值
+        self.rebuild(self.WidgetRowCount + 1, self.WidgetColCount)
         pass
-    
+
     def reset_col_row_name(self):
         col_num = self.tableWidget.columnCount()
         row_num = self.tableWidget.rowCount()
@@ -119,7 +118,7 @@ class Ui_Main(Ui_GUI):
     #     self.GUI.setCentralWidget(self.centralwidget)
     #
     #     self.reset_col_row_name()
-    def rebuild(self,newRowCount,newColumnCount):
+    def rebuild(self, newRowCount, newColumnCount):
         self.tableWidget.init = 'no'
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(newRowCount)
@@ -142,19 +141,15 @@ class Ui_Main(Ui_GUI):
     def random_int(self):
         from Random import Random_interface
 
-        
         interface = Random_interface()
         interface.random_res.connect(self.update_random)
 
-        
         if interface.exec_() == QDialog.Accepted:
             # print(interface.results)
             self.update_random(interface.col_name, result=interface.results)
-        
-
 
     def adjust_column_width(self):
-        #自动调整列宽，并维持列宽在设定最小值之上
+        # 自动调整列宽，并维持列宽在设定最小值之上
         min_column_width = 100
         for column in range(self.tableWidget.columnCount()):
             # print(self.tableWidget.columnWidth(column))
@@ -163,20 +158,20 @@ class Ui_Main(Ui_GUI):
                 self.tableWidget.setColumnWidth(column, min_column_width)
 
     def update_random(self, name="C1", result=[]):
-        
-        #默认名不生效，暂未排查原因
+
+        # 默认名不生效，暂未排查原因
         if name == "":
             name = "C1"
-        #以上为临时解决方案
+        # 以上为临时解决方案
         name_list = name.split()
-        
+
         for lis_num in range(len(name_list)):
             res_set = [float(i) for i in result[lis_num].flatten()]
             self.tableWidget.import_col(name_list[lis_num], res_set)
 
         self.reset_col_row_name()
         self.adjust_column_width()
-    
+
     # Equation 接口
     def equation(self):
         from Equation import Ui_Equation
@@ -184,7 +179,7 @@ class Ui_Main(Ui_GUI):
         try:
             current_col = self.tableWidget.selectedItems()[0].column()
             # print(current_col)
-            Table_data["*C"+str(current_col+1)] = []
+            Table_data["*C" + str(current_col + 1)] = []
         except:
             pass
 
@@ -193,45 +188,43 @@ class Ui_Main(Ui_GUI):
             content = self.tableWidget.selectedItems()[0].text()
             value = float(content) if content else 1
             # print([self.r, current_col+1, value])
-            interface = Ui_Equation(Table_data, [self.r, current_col+1, value])
+            interface = Ui_Equation(Table_data, [self.r, current_col + 1, value])
             interface.eq_res.connect(self.Update_equation)
 
             if interface.exec_() == QDialog.Accepted:
-            
+
                 if "*" in interface.select:
                     print(interface.select)
                     # out_col = interface.select.lstrip("*")
                     # print(out_col, interface.row_num)
-                    self.Update_equation(interface.select, result=interface.result, row = interface.row_num)
+                    self.Update_equation(interface.select, result=interface.result, row=interface.row_num)
                 else:
                     print(interface.select)
-                    self.Update_equation(name = interface.outputcolumn, result=interface.result, row = interface.row_num)
+                    self.Update_equation(name=interface.outputcolumn, result=interface.result, row=interface.row_num)
         except BaseException as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
             error_dialog.showMessage(str(e))
             error_dialog.exec_()
 
-
-
-    def Update_equation(self, name="C1", result=[], row = 1):
-        #默认名不生效，暂未排查原因
+    def Update_equation(self, name="C1", result=[], row=1):
+        # 默认名不生效，暂未排查原因
         if name == "":
             name = "C1"
-        #以上为临时解决方案
+        # 以上为临时解决方案
         # print(name)
         if "*" in name:
             name = name.lstrip("*")
 
         name_list = name.split()
-        
+
         for lis_num in range(len(name_list)):
             res_set = [float(i) for i in result]
             self.tableWidget.import_col(name_list[lis_num], res_set, row)
 
         self.reset_col_row_name()
         self.adjust_column_width()
-    
+
     def SaveToExcel(self):
         try:
             df = self.get_table_data()
@@ -248,12 +241,12 @@ class Ui_Main(Ui_GUI):
             folder_path = filedialog.askopenfilenames()
             # print(folder_path)
             dataframe = pd.read_excel(folder_path[0])
-            LoadData = dataframe.to_dict(orient ='list')
+            LoadData = dataframe.to_dict(orient='list')
             # print(LoadData)
 
             for key in LoadData.keys():
-                new_list = [item for item in LoadData[key] if not(math.isnan(item)) == True]
-                
+                new_list = [item for item in LoadData[key] if not (math.isnan(item)) == True]
+
                 self.tableWidget.import_col(key, new_list, 1)
         except BaseException as e:
             error_dialog = QtWidgets.QErrorMessage()
@@ -261,62 +254,100 @@ class Ui_Main(Ui_GUI):
             error_dialog.showMessage(str(e))
             error_dialog.exec_()
 
-
-    def get_table_data(self):
-        #保存编辑中的位置数据
+    def save_editing_data(self):
         try:
             current_row = self.tableWidget.selectedItems()[0].row()
             current_col = self.tableWidget.selectedItems()[0].column()
-            
+
             temp_row = 0
             temp_col = 0
             if current_row == 0 and current_col == 0:
                 temp_row = 1
             self.tableWidget.setCurrentCell(temp_row, temp_col)
-            
+
             self.tableWidget.setCurrentCell(current_row, current_col)
         except:
             pass
-
+    def print_time(self):
+        from datetime import datetime
+        # 获取当前时间
+        current_time = datetime.now()
+        # 格式化时间为字符串，精确到秒
+        formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        # 输出当前时间
+        print(formatted_time)
+    def get_table_data(self):
+        # 保存编辑中的位置数据
+        self.save_editing_data()
         # 获取表格数据
-        data = []
-        for row in range(1, self.tableWidget.rowCount()):
-            rowData = []
-            for column in range(self.tableWidget.columnCount()):
-                item = self.tableWidget.item(row, column)
-                if item is not None:
-                    if self.is_number(item.text()):
-                        rowData.append(float(item.text()))
-                    elif item.text() !="" and item.text()!=np.nan:
-                        rowData.append(item.text())
-                    else:
-                        rowData.append(np.nan)
-                    # if item.text().isdigit():
-                    #     '''导入时只导入数字，后续可以优化成自动判断数据类型'''
-                    #     rowData.append(float(item.text()))
-                    # else:
-                    #     rowData.append(np.nan)
+        col_data = []
+        col_title=[]
+        Title_matrix = {}
+        type_matrix = {}
+        for col in range(self.WidgetColCount):
+            data = []
+            for row in range(1, self.WidgetRowCount + 1):
+                item = self.tableWidget.item(row, col)
+
+                if item is None: break
+                value = item.text()
+                if value == '': break
+
+                if self.is_number(value):
+                    data.append(float(value))
+                elif value != "" and value != np.nan:
+                    data.append(value)
                 else:
-                    rowData.append(np.nan)
-            data.append(rowData)
-        title = []
-        for i in range(self.tableWidget.columnCount()):
-            if self.tableWidget.horizontalHeaderItem(i) is not None:
-                column_title = self.tableWidget.horizontalHeaderItem(i).text()
-                if self.tableWidget.item(0, i) is not None and self.tableWidget.item(0, i).text() != '':
-                    column_title = "%s" % self.tableWidget.item(0, i).text()
-                title.append(column_title)
-            else:
-                title.append(str(i + 1))
+                    data.append(np.nan)
+            if len(data) > 0:
+                if self.tableWidget.horizontalHeaderItem(col) is not None:
+                    C_title = self.tableWidget.horizontalHeaderItem(col).text()
+                    if self.tableWidget.item(0, col) is not None and self.tableWidget.item(0, col).text() != '':
+                        Title_matrix[C_title]=self.tableWidget.item(0, col).text()
+                    else:
+                        Title_matrix[C_title]=''
+                    col_title.append(C_title)
+                    type_matrix[C_title]=self.data_classification(data)
+                    col_data.append(data)
         # 转换为pandas的DataFrame格式
-        df = pd.DataFrame(data)
-        df.columns = title
-        '''待补内容：转移标题进dataframe'''
-        '''==========================='''
-        df = df.dropna(axis=0, how='all')
-        df = df.dropna(axis=1, how='all')
+        df = pd.DataFrame(col_data).transpose()
+        df.columns = col_title
         # df=df.fillna('')  #填充nan
-        return df
+        return df,Title_matrix,type_matrix
+    def data_classification(self,list):
+        date_patterns = [
+            r'\d{4}-\d{2}-\d{2}',  # YYYY-MM-DD
+            r'\d{2}/\d{2}/\d{4}',  # MM/DD/YYYY
+            r'\d{2}\.\d{2}\.\d{4}',  # DD.MM.YYYY
+            r'\d{4}\.\d{2}\.\d{2}',  # YYYY.MM.DD
+            r'\d{2}-\d{2}-\d{4}',  # DD-MM-YYYY
+            r'\d{4}/\d{2}/\d{2}',  # YYYY/MM/DD
+        ]
+        has_date = False
+        has_text = False
+
+        for item in list:
+            if isinstance(item, str):
+                # Check if the string matches any date pattern
+                if any(re.match(pattern, item) for pattern in date_patterns):
+                    has_date = True
+                else:
+                    has_text = True
+            elif isinstance(item, (int, float)):
+                continue
+            else:
+                has_text = True
+
+            # If both date and text are found, we can stop early
+            if has_date and has_text:
+                return 'T'
+
+        if has_date:
+            return 'D'
+        elif has_text:
+            return 'T'
+        else:
+            return ''
 
     def is_number(self, s):
         pattern = r'^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$'
@@ -331,23 +362,24 @@ class Ui_Main(Ui_GUI):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(random.randint(0, 20))))
 
     def Time_serires_plt(self):
-        # 结束编辑状态
         from Time_series_plot import Time_series_plot
-        table_data = self.get_table_data()
-        pl = Time_series_plot(table_data)
+        # 结束编辑状态
+        table_data,title_matrix,type_matrix= self.get_table_data()
+        pl = Time_series_plot(table_data,title_matrix,type_matrix)
         self.windows.append(pl)
 
     def Scatter_plt(self):
         from Scatter_plot import Scatter_plot
-        table_data = self.get_table_data()
-        pl = Scatter_plot(table_data)
+        table_data,title_matrix,type_matrix= self.get_table_data()
+        pl = Scatter_plot(table_data,title_matrix,type_matrix)
         self.windows.append(pl)
 
     def Histogram_plt(self):
         from Histogram_plot import Histogram_plot
-        table_data = self.get_table_data()
-        pl = Histogram_plot(table_data)
+        table_data,title_matrix,type_matrix = self.get_table_data()
+        pl = Histogram_plot(table_data,title_matrix,type_matrix)
         self.windows.append(pl)
+
     # Pareto图接口
     def Pareto(self):
         from Plot_interface import Ui_Plot_interface
@@ -371,8 +403,8 @@ class Ui_Main(Ui_GUI):
         interface.exec_()
 
     def calculate_statistics(self):
-        if len(self.tableWidget.selectedItems())==0:
-            QMessageBox.about(MainWindow, 'Error','No cells selected' )
+        if len(self.tableWidget.selectedItems()) == 0:
+            QMessageBox.about(MainWindow, 'Error', 'No cells selected')
             return
         selected_items = []
         total_selected_count = 0  # 选中的项的个数
@@ -388,7 +420,7 @@ class Ui_Main(Ui_GUI):
                 continue
 
         if not selected_items:
-            Result= {
+            Result = {
                 "Mean": None,
                 "Max": None,
                 "Min": None,
@@ -397,33 +429,57 @@ class Ui_Main(Ui_GUI):
                 "Sum": None,
 
             }
+        else:
         # 计算统计量
-        mean = np.mean(selected_items)
-        max_value = np.max(selected_items)
-        min_value = np.min(selected_items)
-        variance = np.var(selected_items)
-        median = np.median(selected_items)
-        sum=np.sum(selected_items)
+            mean = np.mean(selected_items)
+            max_value = np.max(selected_items)
+            min_value = np.min(selected_items)
+            variance = np.var(selected_items)
+            median = np.median(selected_items)
+            sum = np.sum(selected_items)
 
-        Result={"Mean": mean,
-                "Max": max_value,
-                "Min": min_value,
-                "Variance": variance,
-                "Median": median,
-                "Sum": sum,
-                }
+            Result = {"Mean": mean,
+                      "Max": max_value,
+                      "Min": min_value,
+                      "Variance": variance,
+                      "Median": median,
+                      "Sum": sum,
+                      }
+
         def format_value(value, precision=5):
             if value is None:
                 return "None"
             return f"{value:.{precision}g}"
-        formatted_result = {key: format_value(value) for key, value in Result.items()}
-        result_str="Count: %s (valid:%s)\n"%(str(total_selected_count),str(valid_selected_count))
-        cal_result= "\n".join([f"{key}: {value}" for key, value in formatted_result.items()])
-        result_str+=cal_result
-        QMessageBox.about(MainWindow, 'Statistic Results', result_str)
 
+        formatted_result = {key: format_value(value) for key, value in Result.items()}
+        result_str = "Count: \t%s\n" %  str(valid_selected_count)
+        cal_result = "\n".join([f"{key}:\t {value}" for key, value in formatted_result.items()])
+        result_str += cal_result
+        from Statistics_window import Ui_Dialog as Statistics_window
+        self.new_window_statistics = QtWidgets.QWidget()
+        self.setting = Statistics_window()
+        self.setting.setupUi(self.new_window_statistics)
+        self.setting.text_Browser.setText(result_str)
+        self.setting.pushButton_copy.clicked.connect(self.copy_result)
+        self.setting.pushButton_close.clicked.connect(self.close_statistics_window)
+        self.new_window_statistics.show()
+
+
+
+        # QMessageBox.about(MainWindow, 'Statistic Results', result_str)
+    def close_statistics_window(self):
+        try:
+            self.new_window_statistics.close()
+        except :
+            pass
+    def copy_result(self):
+        window = self.new_window_statistics
+        result_str = self.setting.text_Browser.toPlainText()
+        import pyperclip
+        pyperclip.copy(result_str)
+        QMessageBox.about(window, '提示', '已复制到剪贴板')
     def closeall(self):
-    # 添加自定义逻辑
+        # 添加自定义逻辑
         sys.exit()
 
 
@@ -438,7 +494,7 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_Main()
     ui.setupUi(MainWindow)
-    
+
     MainWindow.show()
 
     sys.exit(app.exec_())
