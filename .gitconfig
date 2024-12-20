@@ -1,0 +1,5 @@
+[http]
+	sslVerify = false
+[user]
+	email = cph560@126.com
+	name = cph560

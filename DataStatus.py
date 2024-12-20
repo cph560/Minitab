@@ -80,6 +80,12 @@ class Ui_Dialog(QDialog):
         self.Mode = QtWidgets.QLabel(Dialog)
         self.Mode.setObjectName("Mode")
         self.gridLayout_2.addWidget(self.Mode, 3, 2, 1, 1)
+        self.Count = QtWidgets.QLabel(Dialog)
+        self.Count.setObjectName("Count")
+        self.gridLayout_2.addWidget(self.Count, 4, 0, 1, 1)
+        self.lineEdit_count = QtWidgets.QLineEdit(Dialog)
+        self.lineEdit_count.setObjectName("lineEdit_count")
+        self.gridLayout_2.addWidget(self.lineEdit_count, 4, 1, 1, 1)
         self.Median = QtWidgets.QLabel(Dialog)
         self.Median.setObjectName("Median")
         self.gridLayout_2.addWidget(self.Median, 2, 0, 1, 1)
@@ -115,18 +121,29 @@ class Ui_Dialog(QDialog):
         self.label_7.setText(_translate("Dialog", "Data Status:"))
         self.Variance.setText(_translate("Dialog", "Variance:"))
         self.Mode.setText(_translate("Dialog", "Mode:"))
+        self.Count.setText(_translate("Dialog", "Count(Valid):"))
 
     def update_status(self):
-        self.lineEdit.setText(str(np.average(self.input_Data)))
-        self.lineEdit_2.setText(str(np.sum(self.input_Data)))
-        self.lineEdit_3.setText(str(np.min(self.input_Data)))
-        self.lineEdit_4.setText(str(np.max(self.input_Data)))
-        self.lineEdit_5.setText(str(np.std(self.input_Data)))
-        self.lineEdit_6.setText(str(np.median(self.input_Data)))
-        mod = stats.mode(np.array(self.input_Data))
-        # print(mod)
-        self.lineEdit_mode.setText(str(mod.mode))
-        self.lineEdit_var.setText(str(np.var(self.input_Data)))
+        try:
+            self.lineEdit.setText(str(np.average(self.input_Data)))
+            self.lineEdit_2.setText(str(np.sum(self.input_Data)))
+            self.lineEdit_3.setText(str(np.min(self.input_Data)))
+            self.lineEdit_4.setText(str(np.max(self.input_Data)))
+            self.lineEdit_5.setText(str(np.std(self.input_Data)))
+            self.lineEdit_6.setText(str(np.median(self.input_Data)))
+            mod = stats.mode(np.array(self.input_Data))
+            # print(mod)
+            self.lineEdit_mode.setText(str(mod.mode))
+            self.lineEdit_var.setText(str(np.var(self.input_Data)))
+            self.lineEdit_count.setText(str(len(self.input_Data)))
+        
+        except BaseException as e:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.setWindowTitle("Error")
+            error_dialog.showMessage(str(e))
+            error_dialog.exec_()
+
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QDialog()
