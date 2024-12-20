@@ -9,7 +9,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor, QBrush
 
 # 定义PYQT表格操作
 class MyTableWidget(QtWidgets.QTableWidget):
-    def __init__(self, *args, **kwargs,):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         # 创建QMenu信号事件
