@@ -8,13 +8,13 @@ class general_window(object):
     def __init__(self,type):
         self.plot_type=type
         if self.plot_type=='Time_series_plot':
-            from general_plot_window import Ui_Dialog as plot_window
+            from GUI_Plot_Window_General import Ui_Dialog as plot_window
             self.plot = plot_window(type)
         elif self.plot_type=='Scatter_plot':
-            from scatter_plot_window import Ui_Dialog as plot_window
+            from GUI_Plot_Window_Scatter import Ui_Dialog as plot_window
             self.plot = plot_window()
         elif self.plot_type=='Histogram':
-            from general_plot_window import Ui_Dialog as plot_window
+            from GUI_Plot_Window_General import Ui_Dialog as plot_window
             self.plot = plot_window(type)
         super().__init__()
         self.new_window = QtWidgets.QWidget()
@@ -49,7 +49,45 @@ class general_window(object):
                     col_list.append(f'{str(col)}')
         return col_list
 
+    def customized_format(self,num):
+        from decimal import Decimal, ROUND_HALF_UP
+        num=Decimal(num)
+        if num < 0:
+            rounded_num = num.quantize(Decimal('.0001'), rounding=ROUND_HALF_UP)
 
+            # 将Decimal对象转换为字符串，并去除末尾的无效0
+            formatted_num = format(rounded_num, 'f')
+
+            # 去除末尾的无效0
+            formatted_num = formatted_num.rstrip('0').rstrip('.')
+        elif num < 10:
+            rounded_num = num.quantize(Decimal('.001'), rounding=ROUND_HALF_UP)
+
+            # 将Decimal对象转换为字符串，并去除末尾的无效0
+            formatted_num = format(rounded_num, 'f')
+
+            # 去除末尾的无效0
+            formatted_num = formatted_num.rstrip('0').rstrip('.')
+        elif num < 100:
+            rounded_num = num.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+
+            # 将Decimal对象转换为字符串，并去除末尾的无效0
+            formatted_num = format(rounded_num, 'f')
+
+            # 去除末尾的无效0
+            formatted_num = formatted_num.rstrip('0').rstrip('.')
+        elif num < 1000:
+            rounded_num = num.quantize(Decimal('.1'), rounding=ROUND_HALF_UP)
+
+            # 将Decimal对象转换为字符串，并去除末尾的无效0
+            formatted_num = format(rounded_num, 'f')
+
+            # # 去除末尾的无效0
+            formatted_num = formatted_num.rstrip('0').rstrip('.')
+        else:
+            formatted_num = round(num, 0)
+
+        return formatted_num
     def load_data(self,data,title_matrix,type_matrix):
         self.table_raw_data = data
         self.model = QStandardItemModel()

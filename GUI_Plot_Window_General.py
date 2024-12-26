@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'general_plot_window.ui'
+# Form implementation generated from reading ui file 'GUI_Plot_Window_General.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #

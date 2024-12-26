@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Result_window.ui'
+# Form implementation generated from reading ui file 'GUI_Window_Result.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Plot_window(object):
     def setupUi(self, Plot_window):
         Plot_window.setObjectName("Plot_window")
-        Plot_window.resize(629, 562)
+        Plot_window.resize(629, 580)
         self.gridLayout_4 = QtWidgets.QGridLayout(Plot_window)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.gridLayout = QtWidgets.QGridLayout()
@@ -35,24 +35,24 @@ class Ui_Plot_window(object):
         self.gridLayout_4.addLayout(self.gridLayout_2, 1, 0, 1, 1)
         self.gridLayout_3 = QtWidgets.QGridLayout()
         self.gridLayout_3.setObjectName("gridLayout_3")
+        self.pushButton_close = QtWidgets.QPushButton(Plot_window)
+        self.pushButton_close.setObjectName("pushButton_close")
+        self.gridLayout_3.addWidget(self.pushButton_close, 0, 4, 1, 1)
+        self.pushButton_copy = QtWidgets.QPushButton(Plot_window)
+        self.pushButton_copy.setObjectName("pushButton_copy")
+        self.gridLayout_3.addWidget(self.pushButton_copy, 0, 1, 1, 1)
         self.label = QtWidgets.QLabel(Plot_window)
         self.label.setText("")
         self.label.setObjectName("label")
         self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
-        self.label_2 = QtWidgets.QLabel(Plot_window)
-        self.label_2.setText("")
-        self.label_2.setObjectName("label_2")
-        self.gridLayout_3.addWidget(self.label_2, 0, 4, 1, 1)
-        self.pushButton_copy = QtWidgets.QPushButton(Plot_window)
-        self.pushButton_copy.setObjectName("pushButton_copy")
-        self.gridLayout_3.addWidget(self.pushButton_copy, 0, 1, 1, 1)
-        self.pushButton_close = QtWidgets.QPushButton(Plot_window)
-        self.pushButton_close.setObjectName("pushButton_close")
-        self.gridLayout_3.addWidget(self.pushButton_close, 0, 3, 1, 1)
         self.label_3 = QtWidgets.QLabel(Plot_window)
         self.label_3.setText("")
         self.label_3.setObjectName("label_3")
         self.gridLayout_3.addWidget(self.label_3, 0, 2, 1, 1)
+        self.label_4 = QtWidgets.QLabel(Plot_window)
+        self.label_4.setText("")
+        self.label_4.setObjectName("label_4")
+        self.gridLayout_3.addWidget(self.label_4, 0, 5, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 2, 0, 1, 1)
 
         self.retranslateUi(Plot_window)
@@ -61,5 +61,5 @@ class Ui_Plot_window(object):
     def retranslateUi(self, Plot_window):
         _translate = QtCore.QCoreApplication.translate
         Plot_window.setWindowTitle(_translate("Plot_window", "Plot_window"))
-        self.pushButton_copy.setText(_translate("Plot_window", "复制结果"))
         self.pushButton_close.setText(_translate("Plot_window", "关闭"))
+        self.pushButton_copy.setText(_translate("Plot_window", "复制结果"))
