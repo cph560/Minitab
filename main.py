@@ -84,9 +84,54 @@ class Ui_Main(Ui_GUI):
         msg_box = QMessageBox(icon, title, message)
         msg_box.exec_()
     def resize_setting(self):
+        from GUI_Dialog_New import Ui_Dialog as Dialog_New
+        self.new_window_resize = QtWidgets.QWidget()
+        self.resize_setting = Dialog_New()
+        self.resize_setting.setupUi(self.new_window_resize)
+        self.resize_setting.lineEdit_Row.setText(str(self.WidgetRowCount))
+        self.resize_setting.lineEdit_Col.setText(str(self.WidgetColCount))
+        self.resize_setting.pushButton_OK.clicked.connect(self.resize_Widget)
+        self.resize_setting.pushButton_Cancel.clicked.connect(self.close_resize_setting_window)
+        self.new_window_resize.show()
         # 没做窗口，目前是默认值
-        self.rebuild(self.WidgetRowCount + 1, self.WidgetColCount)
-        pass
+    def resize_Widget(self):
+        row_input=self.resize_setting.lineEdit_Row.text()
+        col_input=self.resize_setting.lineEdit_Row.text()
+        clean_flag=self.resize_setting.checkBox_clean.isChecked()
+        if not row_input.isdigit() or int(row_input) <= 1 or not col_input.isdigit() or int(col_input) <= 1:
+            self.show_message_box("错误", "行列数请输入大于1的正整数。", QMessageBox.Critical)
+            return
+        row=int(self.resize_setting.lineEdit_Row.text())
+        col=int(self.resize_setting.lineEdit_Col.text())
+
+        self.rebuild(row + 1, col,clean_flag)
+        self.WidgetRowCount=row
+        self.WidgetColCount=col
+        self.close_resize_setting_window()
+
+    def close_resize_setting_window(self):
+        try:
+            self.new_window_resize.close()
+        except:
+            pass
+    def rebuild(self, newRowCount, newColumnCount,clean=True):
+        self.tableWidget.init = 'no'
+
+        col_num_ori = self.tableWidget.columnCount()
+        self.tableWidget.setRowCount(newRowCount)
+        self.tableWidget.setColumnCount(newColumnCount)
+        color = Qt.lightGray
+
+        if clean:
+            self.tableWidget.clearContents()
+            col_num_ori=0
+        for j in range(col_num_ori,newColumnCount):
+            item = ColorDelegate(color)
+            item.setText("")
+            self.tableWidget.setItem(0,j,item)
+
+        self.reset_col_row_name()
+        self.tableWidget.init = 'yes'
 
     def reset_col_row_name(self):
         col_num = self.tableWidget.columnCount()
@@ -118,24 +163,6 @@ class Ui_Main(Ui_GUI):
     #     self.GUI.setCentralWidget(self.centralwidget)
     #
     #     self.reset_col_row_name()
-    def rebuild(self, newRowCount, newColumnCount):
-        self.tableWidget.init = 'no'
-        self.tableWidget.clearContents()
-        self.tableWidget.setRowCount(newRowCount)
-        self.tableWidget.setColumnCount(newColumnCount)
-        color = Qt.lightGray
-        col_num = self.tableWidget.columnCount()
-        row_num = self.tableWidget.rowCount()
-        for i in range(row_num):
-            for j in range(col_num):
-                if i == 0:
-                    item = ColorDelegate(color)
-                else:
-                    item = QTableWidgetItem()
-                item.setText("")
-                self.tableWidget.setItem(i, j, item)
-        self.reset_col_row_name()
-        self.tableWidget.init = 'yes'
 
     # 随机数接口
     def random_int(self):
@@ -362,20 +389,20 @@ class Ui_Main(Ui_GUI):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(random.randint(0, 20))))
 
     def Time_serires_plt(self):
-        from Time_series_plot import Time_series_plot
+        from Plot_Window_Time_Series import Time_series_plot
         # 结束编辑状态
         table_data,title_matrix,type_matrix= self.get_table_data()
         pl = Time_series_plot(table_data,title_matrix,type_matrix)
         self.windows.append(pl)
 
     def Scatter_plt(self):
-        from Scatter_plot import Scatter_plot
+        from Plot_Window_Scatter import Scatter_plot
         table_data,title_matrix,type_matrix= self.get_table_data()
         pl = Scatter_plot(table_data,title_matrix,type_matrix)
         self.windows.append(pl)
 
     def Histogram_plt(self):
-        from Histogram_plot import Histogram_plot
+        from Plot_Window_Histogram import Histogram_plot
         table_data,title_matrix,type_matrix = self.get_table_data()
         pl = Histogram_plot(table_data,title_matrix,type_matrix)
         self.windows.append(pl)
@@ -450,12 +477,11 @@ class Ui_Main(Ui_GUI):
             if value is None:
                 return "None"
             return f"{value:.{precision}g}"
-
         formatted_result = {key: format_value(value) for key, value in Result.items()}
-        result_str = "Count: \t%s\n" %  str(valid_selected_count)
+        result_str = "Count:\t%s\n" %  str(valid_selected_count)
         cal_result = "\n".join([f"{key}:\t {value}" for key, value in formatted_result.items()])
         result_str += cal_result
-        from Statistics_window import Ui_Dialog as Statistics_window
+        from GUI_Window_Statistics import Ui_Dialog as Statistics_window
         self.new_window_statistics = QtWidgets.QWidget()
         self.setting = Statistics_window()
         self.setting.setupUi(self.new_window_statistics)

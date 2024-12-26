@@ -1,8 +1,8 @@
-from General_Window import  general_window
+from Plot_Window_General import  general_window
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtWidgets
 import numpy as np
-from histogram_setting import Ui_Dialog as setting_window
+from GUI_Plot_Window_Histogram_Setting import Ui_Dialog as setting_window
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
@@ -30,7 +30,7 @@ class Histogram_plot(general_window):
         self.title_matrix = title
         self.swapped_title_matrix = {v: k for k, v in self.title_matrix.items()}
         self.type_matrix = type
-
+        self.format_num_display='.4g'
         self.open_windows = []
         self.open_windows.append(self.new_window)
     def label_change(self):
@@ -62,6 +62,7 @@ class Histogram_plot(general_window):
             self.setting.lineEdit.setText(str(self.minimum_bins))
         else:
             self.setting.Btn_Bin_Custom.setChecked(True)
+            self.label_change()
             self.setting.lineEdit.setText(str(self.custom_bins))
 
         self.open_windows.append(self.new_window_setting)
@@ -143,6 +144,9 @@ class Histogram_plot(general_window):
                 count_dict[column] = 1
         duplicates = [column for column, count in count_dict.items() if count > 1]
         if duplicates:
+            for i, col in enumerate(duplicates):
+                if self.title_matrix[col]!='':
+                    duplicates[i]=self.title_matrix[col]
             QMessageBox.about(self.new_window,'Error',f"存在重复项: {duplicates}")
             return False
 
@@ -177,7 +181,7 @@ class Histogram_plot(general_window):
         # except:
         #     pass
         if self.data_calibration():
-            from Result_window import Ui_Plot_window as result_window
+            from GUI_Window_Result import Ui_Plot_window as result_window
             from matplotlib.figure import Figure
             from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
             from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -188,6 +192,7 @@ class Histogram_plot(general_window):
             self.result_window.setupUi(self.new_window_plot)
             self.result_window.pushButton_close.clicked.connect(self.quit_plot_window)
             self.result_window.pushButton_copy.clicked.connect(self.copy_result)
+            # self.result_window.pushButton_setting.clicked.connect(self.format_setting)
             self.figure = Figure()
             # 创建一个 FigureCanvas 实例
             self.canvas = FigureCanvas(self.figure)
@@ -255,7 +260,10 @@ class Histogram_plot(general_window):
             self.figure.clear()
             ax = self.figure.add_subplot(111)
             self.figure.patch.set_facecolor('white')
-            self.figure.subplots_adjust(left=0.12, right=0.95, top=0.9, bottom=0.13)
+            right=0.95
+            if self.distribution_set:
+                right=0.85
+            self.figure.subplots_adjust(left=0.12, right=right, top=0.9, bottom=0.13)
             # 设置字体
             ax.set_xlabel('X-axis', fontdict={'family': 'serif', 'size': 12, 'weight': 'normal'})
             ax.set_ylabel('Y-axis', fontdict={'family': 'serif', 'size': 12, 'weight': 'normal'})
@@ -279,13 +287,16 @@ class Histogram_plot(general_window):
 
 
             if data_list:
-                ax.hist(data_list, bins=bin_count, density=True, alpha=0.9,
+                ax.hist(data_list, bins=bin_count, density=False, alpha=0.9,
                         color=[colormap(i) for i in range(len(data_list))], edgecolor='black', label=labels,
                         histtype='bar', stacked=stacked)
-
+                lines1, labels1 = ax.get_legend_handles_labels()
+                ax.legend(lines1, labels1, loc='best')
                 if self.distribution_set:
                     fit_equations = {}
                     static_result={}
+                    ax2=ax.twinx()
+                    ax2.set_ylabel('Probability Density')
 
                     for i, column in enumerate(column_list):
                         col_label=column
@@ -295,9 +306,9 @@ class Histogram_plot(general_window):
                         mu, std = norm.fit(plot_data_drop)
                         x = np.linspace(min_val, max_val, 100)
                         y = norm.pdf(x, mu, std)
-                        ax.plot(x, y, '-.', color=colormap2(i), linewidth=2, label=f'{col_label}-Fit')
-                        mu_formatted = f"{mu:.4g}"
-                        std_formatted = f"{std:.4g}"
+                        ax2.plot(x, y, '-.', color=colormap2(i), linewidth=2, label=f'{col_label}-Fit')
+                        mu_formatted=self.customized_format(mu)
+                        std_formatted=self.customized_format(std)
                         Data_count=len(plot_data_drop)
                         # 保存拟合线方程
                         static_result[col_label] = f'\nMean: {mu_formatted}, Std: {std_formatted},Count:{Data_count}'
@@ -316,7 +327,9 @@ class Histogram_plot(general_window):
 
                     self.result_window.textBrowser.setHtml(html_content)
                     self.output_plain_text=plain_content
-            ax.legend()
+                    lines2, labels2 = ax2.get_legend_handles_labels()
+                    ax.legend(lines1 + lines2, labels1 + labels2, loc='best')
+
             #图标设置
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
             # 添加标题和标签
@@ -328,6 +341,7 @@ class Histogram_plot(general_window):
         except Exception as e:
             print(e)
             QMessageBox.about(self.new_window, 'Error', str(e))
+
 
     # def latex_to_image(self, equation):
     #     fig, ax = plt.subplots()
