@@ -227,9 +227,10 @@ class Ui_Main(Ui_GUI):
 
     def SaveToExcel(self):
         try:
-            df = self.get_table_data()
+            df = self.get_table_data()[0]
+            print(df)
             folder_path = filedialog.askdirectory()
-            df.to_excel(f"{folder_path}/table_data.xlsx", index=False)
+            df.to_excel(f"{folder_path}/Saved_data.xlsx", index=False)
         except BaseException as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")

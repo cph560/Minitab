@@ -166,8 +166,10 @@ class MyTableWidget(QtWidgets.QTableWidget):
             
             self.setColumnCount(self.columnCount()+len(col))
             color = Qt.lightGray
-            item = ColorDelegate(color)
+            
             for i in range(len(col)):
+
+                item = ColorDelegate(color)
                 self.setHorizontalHeaderItem(cur_col_num+i, QTableWidgetItem('C'+str(cur_col_num+i+1)))
                 self.setItem(0, cur_col_num+i, item)
         except Exception as e:

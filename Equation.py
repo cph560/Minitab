@@ -104,6 +104,7 @@ class Ui_Equation(QDialog):
         self.comboBox = QtWidgets.QComboBox(self.layoutWidget)
         self.comboBox.setObjectName("comboBox")
         self.gridLayout.addWidget(self.comboBox, 2, 0, 1, 1)
+     
         self.lineEdit_For1 = QtWidgets.QLineEdit(Plot_interface)
         self.lineEdit_For1.setObjectName("lineEdit_For1")
         self.gridLayout.addWidget(self.lineEdit_For1, 4, 0, 1, 1)
@@ -113,6 +114,7 @@ class Ui_Equation(QDialog):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
+      
         self.label_out1 = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -197,6 +199,8 @@ class Ui_Equation(QDialog):
         self.label_out2.setText(_translate("Plot_interface", "Number of Output Cells:"))
         self.label_index.setText(_translate("Plot_interface", "Cell Location: NA"))
         self.label_val.setText(_translate("Plot_interface", "Value: NA"))
+        self.label.setVisible(False)
+        self.comboBox.setVisible(False)
     ###
 
 
@@ -249,7 +253,7 @@ class Ui_Equation(QDialog):
             
             input_col = self.comboBox.currentText() if self.comboBox.currentText() != '' else 1
             
-            in_data = self.input_Data[input_col]
+            in_data = self.input_Data[input_col]#ÐÞ¸ÄÏî
             
             Formu_list = []
             start_point = 0
@@ -273,6 +277,10 @@ class Ui_Equation(QDialog):
             # print(Formu_list)
             exec_formu = []
 
+            data_len = [len(self.input_Data[col_list[i].upper()]) for i in range(len(col_list))]
+            data_len.append(len(in_data))
+            length = min(data_len)
+
             if len(col_list)==0:
                 for i in range(len(in_data)):
                     # exec_formu = 
@@ -280,7 +288,7 @@ class Ui_Equation(QDialog):
                     
                     self.result.append(res)
             else:
-                for i in range(len(in_data)):
+                for i in range(length):
                     for c in range(len(Formu_list)):
                         exec_formu.append(Formu_list[c])
                         if c < len(col_list):
