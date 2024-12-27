@@ -181,7 +181,9 @@ class Ui_GUI(object):
         self.action_equation = QtWidgets.QAction(GUI)
         self.action_equation.setObjectName("action_equation")
         self.menuFormula.addAction(self.action_equation)
-        
+        self.menu.setEnabled(False)
+        self.menuQuality_Tool.setEnabled(False)
+        self.menuSet.setEnabled(False)
         ###
 
         self.retranslateUi(GUI)
@@ -241,3 +243,8 @@ class Ui_GUI(object):
         #ADDon
         self.action_equation.setText(_translate("GUI", "Equation"))
         self.actionLoad.setText(_translate("GUI", "Load"))
+
+    def hide_unfinished_item(self):
+        self.menu.setVisible(False)
+        self.menuQuality_Tool.setVisible(False)
+        self.menuSet.setVisible(False)
