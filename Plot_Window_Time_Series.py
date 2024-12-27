@@ -1,7 +1,7 @@
-from General_Window import  general_window
+from Plot_Window_General import  general_window
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtWidgets
-from time_series_setting import Ui_Dialog as time_setting
+from GUI_Plot_Window_Time_Series_Setting import Ui_Dialog as time_setting
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import MultipleLocator, title
 import sys
@@ -156,6 +156,9 @@ class Time_series_plot(general_window):
             if plot_data.columns[i]!='order':
                 x= plot_data['order'].dropna()
                 y= plot_data.iloc[:, i].dropna()
+                min_length = min(len(x), len(y))
+                x = x.iloc[:min_length]
+                y = y.iloc[:min_length]
                 plt.plot(x,y, marker=marker_list[(line_counter) % len(marker_list)],
                      label=plot_data.columns[i],markersize=marker_size_list[line_counter % len(marker_size_list)])
                 line_counter += 1
@@ -203,7 +206,7 @@ if __name__ == '__main__':
         [6.0, 14.0, 12.0, 10.0, 10.0,'test5'],
         [0.0, 0.0, 0.0, 0.0, 11.0,'test6'],
         [9.0, 8.0, 5.0, 11.0, 18.0,'test7'],
-        [5.0, 15.0, 16.0, 5.0, 19.0,'test8']
+        [1, 15.0, 16.0, 5.0, 19.0,'test8']
     ]
     title_matrix= {'C1':'Size','C2':'Amount','C3':'','C4':'Test','C5':'','C6':'test1'}
     type_matrix= {'C1':'','C2':'','C3':'','C4':'','C5':'','C6':'T'}

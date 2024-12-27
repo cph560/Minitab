@@ -1,9 +1,9 @@
-from General_Window import general_window
+from Plot_Window_General import general_window
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import numpy as np
-from Scatter_plot_setting import Ui_Dialog as setting
+from GUI_Plot_Window_Scatter_Setting import Ui_Dialog as setting
 import matplotlib.pyplot as plt
 from PyQt5.Qt import QTableWidgetItem
 from matplotlib.figure import Figure
@@ -155,7 +155,7 @@ class Scatter_plot(general_window):
 
         plot_df = self.table_raw_data[plot_list]  # 提取画图数据
 
-        from Result_window import Ui_Plot_window as result_window
+        from GUI_Window_Result import Ui_Plot_window as result_window
         self.new_window_plot = QtWidgets.QWidget()
         self.result_window = result_window()
         self.result_window.setupUi(self.new_window_plot)
@@ -225,25 +225,30 @@ class Scatter_plot(general_window):
                     y_linear = np.polyval(coefficients_linear, x_sorted)
                     line,=ax.plot(x_sorted, y_linear, label='Linear Fit - %s' % label)
                     linear_equation, linear_plain = self.coefficients_to_equation(coefficients_linear)
-                    # fit_lines.append(line)
-                    # labels.append(label)
-                    formula += f'{label} - Linear: y={linear_equation}<br>'
-                    formula_plain += f'{label} - Linear: y={linear_plain}\n'
+                    linear_equation=linear_equation.replace("x",x_name)
+                    linear_plain = linear_plain.replace("x", x_name)
+                    formula += f'Linear Regression - {label} :    {y_name}={linear_equation}<br>'
+                    formula_plain += f'{label} - Linear: {y_name}={linear_plain}\n'
 
                 if 2 in self.draw_list:
                     coefficients_quadratic = np.polyfit(x, y, 2)
                     y_quadratic = np.polyval(coefficients_quadratic, x_sorted)
+                    line,=ax.plot(x_sorted, y_quadratic, label='Quadratic Fit- %s' % label)
                     quadratic_equation, quadratic_plain = self.coefficients_to_equation(coefficients_quadratic)
-                    ax.plot(x_sorted, y_quadratic, label='Quadratic Fit- %s' % label)
-                    formula += f'{label} - Quadratic:y= {quadratic_equation}<br>'
-                    formula_plain += f'{label} - Quadratic: y= {quadratic_plain}\n'
+                    quadratic_equation = quadratic_equation.replace("x", x_name)
+                    quadratic_plain = quadratic_plain.replace("x", x_name)
+
+                    formula += f'Quadratic Regression - {label} :   {quadratic_equation}<br>'
+                    formula_plain += f'{label} - Quadratic: {y_name}= {quadratic_plain}\n'
                 if 3 in self.draw_list:
                     coefficients_cubic = np.polyfit(x, y, 3)
                     y_cubic = np.polyval(coefficients_cubic, x_sorted)
+                    line,=ax.plot(x_sorted, y_cubic, label='Cubic Fit - %s' % label)
                     cubic_equation, cubic_plain = self.coefficients_to_equation(coefficients_cubic)
-                    ax.plot(x_sorted, y_cubic, label='Cubic Fit - %s' % label)
-                    formula += f'{label} - Cubic: y= {cubic_equation}<br>'
-                    formula_plain += f'{label} - Cubic: y= {cubic_plain}\n'
+                    cubic_equation=cubic_equation.replace("x", x_name)
+                    cubic_plain=cubic_plain.replace("x", x_name)
+                    formula += f'Cubic Regression - {label} :   {cubic_equation}<br>'
+                    formula_plain += f'{label} - Cubic: {y_name}= {cubic_plain}\n'
 
         ax.legend()
         # Giving title to the chart using plt.title
@@ -316,13 +321,13 @@ class Scatter_plot(general_window):
             result=''
 
             if coefficient_str.startswith('-'):
-                result+=f' - {abs(coefficient):.2g}'
+                result+=f' - {self.customized_format(abs(coefficient))}'
                 offset=int(0)
             else:
-                result+=f' + {coefficient:.2g}'
+                result+=f' + {self.customized_format(coefficient)}'
                 offset=int(0)
 
-            mid = term[0][len(coefficient_str) + offset:]
+            # mid = term[0][len(coefficient_str) + offset:]
             if term[0][len(coefficient_str) +offset:] != "":
                 if abs(coefficient)==1:
                     result=result[:len(result)-1]
@@ -341,11 +346,11 @@ class Scatter_plot(general_window):
         for i, c in enumerate(coefficients):
             power=len(coefficients)-i-1
             if power == 0:
-                terms.append([f'{c:.2g}', power])
+                terms.append([f'{self.customized_format(c)}', power])
             elif power == 1:
-                terms.append([f'{c:.2g}x', power])
+                terms.append([f'{self.customized_format(c)}x', power])
             else:
-                terms.append([f'{c:.2g}x<sup>{power}</sup>', power])
+                terms.append([f'{self.customized_format(c)}x<sup>{power}</sup>', power])
             # 按照指数降序排列
         # terms.sort(key=lambda x: -x[1])
 
@@ -359,11 +364,11 @@ class Scatter_plot(general_window):
         for i, c in enumerate(coefficients):
             power = len(coefficients) - i - 1
             if power == 0:
-                terms.append([f'{c:.2g}', power])
+                terms.append([f'{self.customized_format(c)}', power])
             elif power == 1:
-                terms.append([f'{c:.2g}x', power])
+                terms.append([f'{self.customized_format(c)}x', power])
             else:
-                terms.append([f'{c:.2g}x^{power}', power])
+                terms.append([f'{self.customized_format(c)}x^{power}', power])
             # 按照指数降序排列
         # terms.sort(key=lambda x: -x[1])
         parts_plain= self.terms_2_equation(terms)

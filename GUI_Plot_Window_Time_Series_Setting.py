@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'time_series_setting.ui'
+# Form implementation generated from reading ui file 'GUI_Plot_Window_Time_Series_Setting.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
