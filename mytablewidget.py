@@ -57,15 +57,14 @@ class MyTableWidget(QtWidgets.QTableWidget):
 
         else:
             # 检查输入的值是否为数字
-            if value.isdigit():
-                pass  # 转换为整数
+            if value == '' or value == None:
+                return
             # 填充上方所有列中的空值为0
             for r in range(row - 1, 0, -1):
                 upper_item = self.item(r, column)
                 if upper_item is None or upper_item.text() == "":
                     self.setItem(r, column, QTableWidgetItem("0"))
-            else:
-                return  # 如果不是数字，不执行填充操作
+
 
 
     #删除Table Text
@@ -109,7 +108,11 @@ class MyTableWidget(QtWidgets.QTableWidget):
             columns = len(ls1[0])
             for row in range(rows):
                 for column in range(1, columns):
-                    item = QTableWidgetItem()
+                    if row+r==0:
+                        color = Qt.lightGray
+                        item = ColorDelegate(color)
+                    else:
+                        item = QTableWidgetItem()
                     item.setText((str(ls1[row][column])))
                     self.setItem(row + r, column + c-1, item)
         except Exception as e:

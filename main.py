@@ -24,7 +24,7 @@ from PyQt5.QtWidgets import QMessageBox
 class Ui_Main(Ui_GUI):
     def __init__(self):
         self.windows = []
-
+        self.color = Qt.lightGray
     def setupUi(self, GUI):
         super().setupUi(GUI)
         self.WidgetRowCount = 5000  # 可修改项
@@ -53,11 +53,11 @@ class Ui_Main(Ui_GUI):
         ''' 修改所有 Cell 值到“” '''
 
         '''修改颜色'''
-        color = Qt.lightGray
+
         for i in range(row_num):
             for j in range(col_num):
                 if i == 0:
-                    item = ColorDelegate(color)
+                    item = ColorDelegate(self.color)
                 else:
                     item = QTableWidgetItem()
                 item.setText("")
@@ -80,7 +80,7 @@ class Ui_Main(Ui_GUI):
         self.actionLoad.triggered.connect(self.LoadExcel)
         self.actionQuit.triggered.connect(self.closeall)
 
-    def show_message_box(self, title, message, icon):
+    def show_message_box(self, title, message, icon=QMessageBox.information):
         msg_box = QMessageBox(icon, title, message)
         msg_box.exec_()
     def resize_setting(self):
@@ -120,13 +120,13 @@ class Ui_Main(Ui_GUI):
         col_num_ori = self.tableWidget.columnCount()
         self.tableWidget.setRowCount(newRowCount)
         self.tableWidget.setColumnCount(newColumnCount)
-        color = Qt.lightGray
+
 
         if clean:
             self.tableWidget.clearContents()
             col_num_ori=0
         for j in range(col_num_ori,newColumnCount):
-            item = ColorDelegate(color)
+            item = ColorDelegate(self.color)
             item.setText("")
             self.tableWidget.setItem(0,j,item)
 
@@ -254,28 +254,37 @@ class Ui_Main(Ui_GUI):
 
     def SaveToExcel(self):
         try:
-            df = self.get_table_data()[0]
-            print(df)
-            folder_path = filedialog.askdirectory()
-            df.to_excel(f"{folder_path}/Saved_data.xlsx", index=False)
+            df= self.get_table_data(header=True)[0]
+            output_file_name, filetype = QFileDialog.getSaveFileName(MainWindow, '选择保存位置',
+                                                                    'Output_Data',
+                                                                    'Excel files (*.xlsx)')
+            if output_file_name != '':
+                df.to_excel(output_file_name, header=False,index=False)
+                self.show_message_box("Success", f'Done. Saved to {output_file_name}',QMessageBox.Information)
         except BaseException as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
             error_dialog.showMessage(str(e))
             error_dialog.exec_()
-
     def LoadExcel(self):
         try:
-            folder_path = filedialog.askopenfilenames()
+            import_file_name, filetype = QFileDialog.getOpenFileName(MainWindow, '选择文件位置',
+                                                                     '',
+                                                                     'Excel files (*.xlsx)')
+            # folder_path = filedialog.askopenfilenames()
             # print(folder_path)
-            dataframe = pd.read_excel(folder_path[0])
-            LoadData = dataframe.to_dict(orient='list')
-            # print(LoadData)
+            dataframe = pd.read_excel(import_file_name,header=None)
+            self.rebuild(len(dataframe)+10,len(dataframe.columns)+2,True)
+            for i in range(len(dataframe)):
+                for j in range(len(dataframe.columns)):
+                    content=''
+                    if pd.notna(dataframe.iloc[i,j]):
+                        content=str(dataframe.iloc[i, j])
+                    item=QTableWidgetItem(content)
+                    if i==0:
+                        item.setBackground(self.color)
+                    self.tableWidget.setItem(i, j,item)
 
-            for key in LoadData.keys():
-                new_list = [item for item in LoadData[key] if not (math.isnan(item)) == True]
-
-                self.tableWidget.import_col(key, new_list, 1)
         except BaseException as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
@@ -304,7 +313,7 @@ class Ui_Main(Ui_GUI):
         formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
         # 输出当前时间
         print(formatted_time)
-    def get_table_data(self):
+    def get_table_data(self,header=False):
         # 保存编辑中的位置数据
         self.save_editing_data()
         # 获取表格数据
@@ -312,14 +321,18 @@ class Ui_Main(Ui_GUI):
         col_title=[]
         Title_matrix = {}
         type_matrix = {}
+        start_row=1
+        if header:
+            start_row=0
         for col in range(self.WidgetColCount):
             data = []
-            for row in range(1, self.WidgetRowCount + 1):
+            for row in range(start_row, self.WidgetRowCount + 1):
                 item = self.tableWidget.item(row, col)
-
-                if item is None: break
+                if item is None and row==1: break
+                if pd.isna(item) and row!=0:break
                 value = item.text()
-                if value == '': break
+
+                if value == '' and row==1: break
 
                 if self.is_number(value):
                     data.append(float(value))
@@ -336,10 +349,22 @@ class Ui_Main(Ui_GUI):
                         Title_matrix[C_title]=''
                     col_title.append(C_title)
                     type_matrix[C_title]=self.data_classification(data)
+                    if type_matrix[C_title]!='':
+                        for i in range(len(data)):
+                            if pd.notna(data[i]):
+                                data[i]=str(data[i])
                     col_data.append(data)
+
+            
+
+
         # 转换为pandas的DataFrame格式
         df = pd.DataFrame(col_data).transpose()
         df.columns = col_title
+        first_row = df.iloc[0:1]
+        remaining_df=df.iloc[1:].dropna(how='all')
+        df=pd.concat([first_row, remaining_df]).reset_index(drop=True)
+
         # df=df.fillna('')  #填充nan
         return df,Title_matrix,type_matrix
     def data_classification(self,list):
@@ -521,7 +546,6 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_Main()
     ui.setupUi(MainWindow)
-
     MainWindow.show()
 
     sys.exit(app.exec_())
