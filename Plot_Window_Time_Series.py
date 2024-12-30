@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import MultipleLocator, title
 import sys
 import pandas as pd
+import numpy as np
 
 class Time_series_plot(general_window):
     def __init__(self,data,title,type):
@@ -144,37 +145,44 @@ class Time_series_plot(general_window):
         label_y = ','.join(title_list)
 
         plot_data = self.table_raw_data.loc[:, column_list].copy()
+        plot_data = plot_data.dropna(how='all')
         if self.x_type=='Seq':
             plot_data.insert(0, 'order', list(range(1, len(plot_data) + 1)))
         else:
-            plot_data['order'] = self.table_raw_data[self.x_custom].copy()
-        # plot_data = plot_data.fillna('')
+            x_custom_data = self.table_raw_data[self.x_custom].copy()
+            x_custom_data = x_custom_data.apply(lambda x: str(x) if pd.notna(x) else x)
+            if len(x_custom_data) > len(plot_data):
+                x_custom_data = x_custom_data.iloc[:len(plot_data)]
+            plot_data['order'] = x_custom_data
+
 
         '''完成摘取数据，开始画图'''
         line_counter=0
+        x = plot_data['order'].dropna()
+
+        if len(x) > len(plot_data):
+            x = x.iloc[:len(plot_data)]
+        elif len(x) < len(plot_data):
+            temp_list = []
+            for j in range(len(plot_data) - len(x)):
+                temp_list.append('no_label_' + str(j))
+            x = pd.concat([x, pd.Series(temp_list)], ignore_index=True)
+
+
+
         for i in range(0, plot_data.shape[1]):
             if plot_data.columns[i]!='order':
-                x= plot_data['order'].dropna()
                 y= plot_data.iloc[:, i].dropna()
-                min_length = min(len(x), len(y))
-                x = x.iloc[:min_length]
-                y = y.iloc[:min_length]
-                plt.plot(x,y, marker=marker_list[(line_counter) % len(marker_list)],
+                x_draw=x[:len(y)]
+                plt.plot(x_draw,y, marker=marker_list[(line_counter) % len(marker_list)],
                      label=plot_data.columns[i],markersize=marker_size_list[line_counter % len(marker_size_list)])
                 line_counter += 1
-        plt.title('Time Series Plot of %s' % label_y)
-        order_type=''
-        if self.x_type=='Customized':
-            order_type=self.type_matrix[self.x_custom]
 
-        if order_type=='':
-            data_interval = max(plot_data['order']) - min(plot_data['order'])
-            data_interval = max(data_interval // 8, 1)
-        elif order_type=="T" or order_type=="D":
-            data_interval = len(plot_data['order'].dropna())
-            data_interval = max(data_interval // 8, 1)
-        else:
-            data_interval=1
+
+        plt.title('Time Series Plot of %s' % label_y)
+
+        data_interval = len(plot_data['order'])
+        data_interval = max(data_interval // 8, 1)
         x_major_locator = MultipleLocator(data_interval)
 
         ax = plt.gca()  # 实例化坐标轴
@@ -186,6 +194,19 @@ class Time_series_plot(general_window):
                 xlabel=self.x_custom
             else:
                 xlabel=self.title_matrix[self.x_custom]
+
+
+        filtered_positions = [x[i] for i in range(len(x)) if i % data_interval == 0]
+
+
+        filtered_labels = [str(x) if 'no_label_' not in str(x) else '' for x in filtered_positions]
+
+        ax.set_xticks(filtered_positions)
+        if any(len(label) > 8 for label in filtered_labels):
+            plt.subplots_adjust(bottom=0.2)
+            ax.set_xticklabels(filtered_labels, rotation=45)
+        else:
+            ax.set_xticklabels(filtered_labels)
         plt.xlabel(xlabel)
         plt.ylabel(label_y)
         plt.show()
@@ -199,14 +220,14 @@ if __name__ == '__main__':
     columns = ['C1', 'C2', 'C3', 'C4', 'C5','C6']
     # 定义数据
     data = [
-        [19.0, 14.0, 9.0, 12.0, 1.0,'test1'],
+        [19.0, 14.0, 9.0, 12.0, 1.0,'test1',],
         [3.0, 16.0, 5.0, 20.0, 3.0,'test2'],
         [19.0, 5.0, 14.0, 15.0, 5.0,'test3'],
         [18.0, 10.0, 5.0, 13.0, 8.0,'test4'],
-        [6.0, 14.0, 12.0, 10.0, 10.0,'test5'],
+        [6.0, 14.0, 12.0, 10.0, 10.0,'test5123421'],
         [0.0, 0.0, 0.0, 0.0, 11.0,'test6'],
-        [9.0, 8.0, 5.0, 11.0, 18.0,'test7'],
-        [1, 15.0, 16.0, 5.0, 19.0,'test8']
+        [9.0, 8.0, 5.0, 11.0, 18.0,np.nan],
+        [1, 15.0, 16.0, 5.0, 19.0,np.nan]
     ]
     title_matrix= {'C1':'Size','C2':'Amount','C3':'','C4':'Test','C5':'','C6':'test1'}
     type_matrix= {'C1':'','C2':'','C3':'','C4':'','C5':'','C6':'T'}
