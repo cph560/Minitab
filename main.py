@@ -3,9 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import pandas as pd
 import numpy as np
-from pandas.core.common import temp_setattr
-from tkinter import filedialog, Widget
-import math
+
 
 # 自定义Widget
 from mytablewidget import MyTableWidget
@@ -542,10 +540,16 @@ class ColorDelegate(QTableWidgetItem):
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_Main()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    try:
+        app = QtWidgets.QApplication(sys.argv)
+        MainWindow = QtWidgets.QMainWindow()
+        ui = Ui_Main()
+        ui.setupUi(MainWindow)
+        MainWindow.show()
 
-    sys.exit(app.exec_())
+        sys.exit(app.exec_())
+    except Exception as e:
+        print(f"程序出错: {e}", file=sys.stderr)
+        input("按 Enter 键退出...")
+        sys.exit(1)
+

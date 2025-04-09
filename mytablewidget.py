@@ -100,6 +100,8 @@ class MyTableWidget(QtWidgets.QTableWidget):
                 break
             r, c = index.row(), index.column()
             text = QApplication.clipboard().text()
+            if text.endswith("\n"):
+                text=text[:-1]
             ls = text.split('\n')
             ls1 = []
             for row in ls:
@@ -107,14 +109,14 @@ class MyTableWidget(QtWidgets.QTableWidget):
             rows = len(ls)
             columns = len(ls1[0])
             for row in range(rows):
-                for column in range(1, columns):
+                for column in range(0, columns):
                     if row+r==0:
                         color = Qt.lightGray
                         item = ColorDelegate(color)
                     else:
                         item = QTableWidgetItem()
                     item.setText((str(ls1[row][column])))
-                    self.setItem(row + r, column + c-1, item)
+                    self.setItem(row + r, column + c, item)
         except Exception as e:
             print(e)
             return
