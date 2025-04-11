@@ -230,84 +230,84 @@ class Ui_Equation(QDialog):
             self.cal_by_cell()
             return ''
         
-        try:
-            self.out_col = self.lineEdit_out1.text()
-            self.formu = self.lineEdit_For1.text().lower()
-            col_list = []
-            
-            Tcontent = self.formu.lower().split("c")
-            
-            for item in Tcontent:
-                if item != '' and len(Tcontent) > 1:
-                    count = 0
-                    for string in item:
-                        try:
-                            x = int(string)
-                            
-                            count += 1
-                        except:
-                            break
+        # try:
+        self.out_col = self.lineEdit_out1.text()
+        self.formu = self.lineEdit_For1.text().lower()
+        col_list = []
+        
+        Tcontent = self.formu.lower().split("c")
+        
+        for item in Tcontent:
+            if item != '' and len(Tcontent) > 1:
+                count = 0
+                for string in item:
+                    try:
+                        x = int(string)
                         
-                    col_list.append("c"+item[0:count])
-
-            
-            input_col = self.comboBox.currentText() if self.comboBox.currentText() != '' else 1
-            
-            in_data = self.input_Data[input_col]#修改项
-            
-            Formu_list = []
-            start_point = 0
-            for col in col_list:
-                for strl_num in range(start_point, len(self.formu)):
-                    if self.formu[strl_num]=="c":
-                        # print(start_point,strl_num)
-                        Formu_list.append(self.formu[start_point:strl_num])
-                        start_point = strl_num+len(col)
-                        if start_point >= len(self.formu):
-                            # print(f"break: {start_point}")
-                            break
-                        else:
-                            continue
-                # sym = self.formu.split(col)
-            try: 
-                Formu_list.append(self.formu[start_point:])
-            except:
-                pass
-
-            # print(Formu_list)
-            exec_formu = []
-
-            data_len = [len(self.input_Data[col_list[i].upper()]) for i in range(len(col_list))]
-            data_len.append(len(in_data))
-            length = min(data_len)
-
-            if len(col_list)==0:
-                for i in range(len(in_data)):
-                    # exec_formu = 
-                    res = eval(str(in_data[i])+self.formu)
+                        count += 1
+                    except:
+                        break
                     
-                    self.result.append(res)
-            else:
-                for i in range(length):
-                    for c in range(len(Formu_list)):
-                        exec_formu.append(Formu_list[c])
-                        if c < len(col_list):
-                            
-                            exec_formu.append(self.input_Data[col_list[c].upper()][i])
-                    
-                    res = eval("".join(exec_formu))
-                    exec_formu = []
-                    self.result.append(res)
-            # print(self.result)
-            self.eq_res.emit(self.out_col, self.result, 1)
-            
-            self.close()
+                col_list.append("c"+item[0:count])
 
-        except BaseException as e:
-            error_dialog = QtWidgets.QErrorMessage()
-            error_dialog.setWindowTitle("Error")
-            error_dialog.showMessage(str(e))
-            error_dialog.exec_()
+        
+        input_col = self.comboBox.currentText() if self.comboBox.currentText() != '' else 1
+        
+        in_data = self.input_Data[input_col]#修改项
+        
+        Formu_list = []
+        start_point = 0
+        for col in col_list:
+            for strl_num in range(start_point, len(self.formu)):
+                if self.formu[strl_num]=="c":
+                    # print(start_point,strl_num)
+                    Formu_list.append(self.formu[start_point:strl_num])
+                    start_point = strl_num+len(col)
+                    if start_point >= len(self.formu):
+                        # print(f"break: {start_point}")
+                        break
+                    else:
+                        continue
+            # sym = self.formu.split(col)
+        try: 
+            Formu_list.append(self.formu[start_point:])
+        except:
+            pass
+
+        # print(Formu_list)
+        exec_formu = []
+        print(self.input_Data)
+        data_len = [len(self.input_Data[col_list[i].upper()]) for i in range(len(col_list))]
+        data_len.append(len(in_data))
+        length = min(data_len)
+
+        if len(col_list)==0:
+            for i in range(len(in_data)):
+                # exec_formu = 
+                res = eval(str(in_data[i])+self.formu)
+                
+                self.result.append(res)
+        else:
+            for i in range(length):
+                for c in range(len(Formu_list)):
+                    exec_formu.append(Formu_list[c])
+                    if c < len(col_list):
+                        
+                        exec_formu.append(self.input_Data[col_list[c].upper()][i])
+                
+                res = eval("".join(exec_formu))
+                exec_formu = []
+                self.result.append(res)
+        # print(self.result)
+        self.eq_res.emit(self.out_col, self.result, 1)
+        
+        self.close()
+
+        # except BaseException as e:
+        #     error_dialog = QtWidgets.QErrorMessage()
+        #     error_dialog.setWindowTitle("Error")
+        #     error_dialog.showMessage(str(e))
+        #     error_dialog.exec_()
 
     def cal_by_cell(self):
         if self.toolBox.currentIndex() == 0:
@@ -342,6 +342,7 @@ class Ui_Equation(QDialog):
             self.select = "*"+self.select
             self.eq_res.emit(self.select, self.result, self.row_num)
             self.close()
+            
         except BaseException as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")

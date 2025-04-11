@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 
-# ×Ô¶¨ÒåWidget
+# è‡ªå®šä¹‰Widget
 from mytablewidget import MyTableWidget
 from PyQt5.Qt import QTableWidgetItem
 from designer import Ui_GUI
@@ -17,22 +17,22 @@ import re
 from PyQt5.QtWidgets import QMessageBox
 
 
-# Ö÷º¯Êı
-# ³ı#¿ÉĞŞ¸ÄÏîÒÔÍâ¾ùÎªQtDesignerÉú³É
+# ä¸»å‡½æ•°
+# é™¤#å¯ä¿®æ”¹é¡¹ä»¥å¤–å‡ä¸ºQtDesignerç”Ÿæˆ
 class Ui_Main(Ui_GUI):
     def __init__(self):
         self.windows = []
         self.color = Qt.lightGray
     def setupUi(self, GUI):
         super().setupUi(GUI)
-        self.WidgetRowCount = 5000  # ¿ÉĞŞ¸ÄÏî
-        self.WidgetColCount = 25  # ¿ÉĞŞ¸ÄÏî
-        self.GUI = GUI  # ¿ÉĞŞ¸ÄÏî
+        self.WidgetRowCount = 5000  # å¯ä¿®æ”¹é¡¹
+        self.WidgetColCount = 25  # å¯ä¿®æ”¹é¡¹
+        self.GUI = GUI  # å¯ä¿®æ”¹é¡¹
 
-        self.tableWidget = MyTableWidget(self.centralwidget)  # ¿ÉĞŞ¸ÄÏî
+        self.tableWidget = MyTableWidget(self.centralwidget)  # å¯ä¿®æ”¹é¡¹
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(self.WidgetColCount)  # ĞŞ¸ÄÏî
-        self.tableWidget.setRowCount(self.WidgetRowCount + 1)  # ĞŞ¸ÄÏî
+        self.tableWidget.setColumnCount(self.WidgetColCount)  # ä¿®æ”¹é¡¹
+        self.tableWidget.setRowCount(self.WidgetRowCount + 1)  # ä¿®æ”¹é¡¹
         GUI.setCentralWidget(self.tableWidget)
 
         GUI.setObjectName("GUI")
@@ -41,16 +41,16 @@ class Ui_Main(Ui_GUI):
         GUI.setMouseTracking(False)
 
         ################################
-        '''ĞŞ¸ÄĞĞÃûÁĞÃû'''
+        '''ä¿®æ”¹è¡Œååˆ—å'''
         self.reset_col_row_name()
 
         col_num = self.tableWidget.columnCount()
         row_num = self.tableWidget.rowCount()
         # for num in range(col_num):
         #         self.tableWidget.setHorizontalHeaderItem(num,QTableWidgetItem("C"+str(num+1)))
-        ''' ĞŞ¸ÄËùÓĞ Cell Öµµ½¡°¡± '''
+        ''' ä¿®æ”¹æ‰€æœ‰ Cell å€¼åˆ°â€œâ€ '''
 
-        '''ĞŞ¸ÄÑÕÉ«'''
+        '''ä¿®æ”¹é¢œè‰²'''
 
         for i in range(row_num):
             for j in range(col_num):
@@ -91,13 +91,13 @@ class Ui_Main(Ui_GUI):
         self.resize_setting.pushButton_OK.clicked.connect(self.resize_Widget)
         self.resize_setting.pushButton_Cancel.clicked.connect(self.close_resize_setting_window)
         self.new_window_resize.show()
-        # Ã»×ö´°¿Ú£¬Ä¿Ç°ÊÇÄ¬ÈÏÖµ
+        # æ²¡åšçª—å£ï¼Œç›®å‰æ˜¯é»˜è®¤å€¼
     def resize_Widget(self):
         row_input=self.resize_setting.lineEdit_Row.text()
         col_input=self.resize_setting.lineEdit_Row.text()
         clean_flag=self.resize_setting.checkBox_clean.isChecked()
         if not row_input.isdigit() or int(row_input) <= 1 or not col_input.isdigit() or int(col_input) <= 1:
-            self.show_message_box("´íÎó", "ĞĞÁĞÊıÇëÊäÈë´óÓÚ1µÄÕıÕûÊı¡£", QMessageBox.Critical)
+            self.show_message_box("é”™è¯¯", "è¡Œåˆ—æ•°è¯·è¾“å…¥å¤§äº1çš„æ­£æ•´æ•°ã€‚", QMessageBox.Critical)
             return
         row=int(self.resize_setting.lineEdit_Row.text())
         col=int(self.resize_setting.lineEdit_Col.text())
@@ -141,28 +141,28 @@ class Ui_Main(Ui_GUI):
         self.tableWidget.setVerticalHeaderLabels(Row_List)
 
     # def clear(self):
-    #     # ÒÆ³ıtableWidget¿Ø¼ş
+    #     # ç§»é™¤tableWidgetæ§ä»¶
     #     self.horizontalLayout.removeWidget(self.tableWidget)
-    #     # É¾³ıtableWidget¿Ø¼ş
+    #     # åˆ é™¤tableWidgetæ§ä»¶
     #     del self.tableWidget
     #
-    #     # ´´½¨ĞÂµÄtableWidget¿Ø¼ş
+    #     # åˆ›å»ºæ–°çš„tableWidgetæ§ä»¶
     #     self.tableWidget = MyTableWidget(self.centralwidget)
-    #     # ÉèÖÃ¿Ø¼ş¶ÔÏóÃû³Æ
+    #     # è®¾ç½®æ§ä»¶å¯¹è±¡åç§°
     #     self.tableWidget.setObjectName("tableWidget")
-    #     # ÉèÖÃÁĞÊı
+    #     # è®¾ç½®åˆ—æ•°
     #     self.tableWidget.setColumnCount(10)
-    #     # ÉèÖÃĞĞÊı
+    #     # è®¾ç½®è¡Œæ•°
     #     self.tableWidget.setRowCount(10)
-    #     # ½«¿Ø¼şÌí¼Óµ½²¼¾ÖÖĞ
+    #     # å°†æ§ä»¶æ·»åŠ åˆ°å¸ƒå±€ä¸­
     #     self.horizontalLayout.addWidget(self.tableWidget)
     #
-    #     # ÉèÖÃÖ÷´°¿ÚµÄÖĞÑë¿Ø¼ş
+    #     # è®¾ç½®ä¸»çª—å£çš„ä¸­å¤®æ§ä»¶
     #     self.GUI.setCentralWidget(self.centralwidget)
     #
     #     self.reset_col_row_name()
 
-    # Ëæ»úÊı½Ó¿Ú
+    # éšæœºæ•°æ¥å£
     def random_int(self):
         from Random import Random_interface
 
@@ -174,7 +174,7 @@ class Ui_Main(Ui_GUI):
             self.update_random(interface.col_name, result=interface.results)
 
     def adjust_column_width(self):
-        # ×Ô¶¯µ÷ÕûÁĞ¿í£¬²¢Î¬³ÖÁĞ¿íÔÚÉè¶¨×îĞ¡ÖµÖ®ÉÏ
+        # è‡ªåŠ¨è°ƒæ•´åˆ—å®½ï¼Œå¹¶ç»´æŒåˆ—å®½åœ¨è®¾å®šæœ€å°å€¼ä¹‹ä¸Š
         min_column_width = 100
         for column in range(self.tableWidget.columnCount()):
             # print(self.tableWidget.columnWidth(column))
@@ -184,10 +184,10 @@ class Ui_Main(Ui_GUI):
 
     def update_random(self, name="C1", result=[]):
 
-        # Ä¬ÈÏÃû²»ÉúĞ§£¬ÔİÎ´ÅÅ²éÔ­Òò
+        # é»˜è®¤åä¸ç”Ÿæ•ˆï¼Œæš‚æœªæ’æŸ¥åŸå› 
         if name == "":
             name = "C1"
-        # ÒÔÉÏÎªÁÙÊ±½â¾ö·½°¸
+        # ä»¥ä¸Šä¸ºä¸´æ—¶è§£å†³æ–¹æ¡ˆ
         name_list = name.split()
 
         for lis_num in range(len(name_list)):
@@ -197,10 +197,22 @@ class Ui_Main(Ui_GUI):
         self.reset_col_row_name()
         self.adjust_column_width()
 
-    # Equation ½Ó¿Ú
+    # Equation æ¥å£
     def equation(self):
         from Equation import Ui_Equation
         Table_data = self.tableWidget.transfer_data()
+        line_1_title = {}
+
+        for col in range(self.WidgetColCount):
+            if self.tableWidget.item(0, col).text() != "":
+
+                line_1_title[self.tableWidget.item(0, col).text()] = "C" + str(col + 1)
+            
+
+        for key in line_1_title.keys():
+            
+            Table_data[line_1_title[key]] = Table_data.pop(key)
+        print(Table_data)        
         try:
             current_col = self.tableWidget.selectedItems()[0].column()
             # print(current_col)
@@ -226,6 +238,7 @@ class Ui_Main(Ui_GUI):
                 else:
                     print(interface.select)
                     self.Update_equation(name=interface.outputcolumn, result=interface.result, row=interface.row_num)
+
         except BaseException as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
@@ -233,10 +246,10 @@ class Ui_Main(Ui_GUI):
             error_dialog.exec_()
 
     def Update_equation(self, name="C1", result=[], row=1):
-        # Ä¬ÈÏÃû²»ÉúĞ§£¬ÔİÎ´ÅÅ²éÔ­Òò
+        # é»˜è®¤åä¸ç”Ÿæ•ˆï¼Œæš‚æœªæ’æŸ¥åŸå› 
         if name == "":
             name = "C1"
-        # ÒÔÉÏÎªÁÙÊ±½â¾ö·½°¸
+        # ä»¥ä¸Šä¸ºä¸´æ—¶è§£å†³æ–¹æ¡ˆ
         # print(name)
         if "*" in name:
             name = name.lstrip("*")
@@ -250,23 +263,28 @@ class Ui_Main(Ui_GUI):
         self.reset_col_row_name()
         self.adjust_column_width()
 
+
     def SaveToExcel(self):
+        # å°è¯•ä¿å­˜æ•°æ®åˆ°Excelæ–‡ä»¶
         try:
+
             df= self.get_table_data(header=True)[0]
-            output_file_name, filetype = QFileDialog.getSaveFileName(MainWindow, 'Ñ¡Ôñ±£´æÎ»ÖÃ',
+            output_file_name, filetype = QFileDialog.getSaveFileName(MainWindow, 'é€‰æ‹©ä¿å­˜ä½ç½®',
                                                                     'Output_Data',
                                                                     'Excel files (*.xlsx)')
             if output_file_name != '':
                 df.to_excel(output_file_name, header=False,index=False)
                 self.show_message_box("Success", f'Done. Saved to {output_file_name}',QMessageBox.Information)
+
         except BaseException as e:
+            # å¦‚æœå‡ºç°å¼‚å¸¸ï¼Œå¼¹å‡ºé”™è¯¯å¯¹è¯æ¡†
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
             error_dialog.showMessage(str(e))
             error_dialog.exec_()
     def LoadExcel(self):
         try:
-            import_file_name, filetype = QFileDialog.getOpenFileName(MainWindow, 'Ñ¡ÔñÎÄ¼şÎ»ÖÃ',
+            import_file_name, filetype = QFileDialog.getOpenFileName(MainWindow, 'é€‰æ‹©æ–‡ä»¶ä½ç½®',
                                                                      '',
                                                                      'Excel files (*.xlsx)')
             # folder_path = filedialog.askopenfilenames()
@@ -305,16 +323,16 @@ class Ui_Main(Ui_GUI):
             pass
     def print_time(self):
         from datetime import datetime
-        # »ñÈ¡µ±Ç°Ê±¼ä
+        # è·å–å½“å‰æ—¶é—´
         current_time = datetime.now()
-        # ¸ñÊ½»¯Ê±¼äÎª×Ö·û´®£¬¾«È·µ½Ãë
+        # æ ¼å¼åŒ–æ—¶é—´ä¸ºå­—ç¬¦ä¸²ï¼Œç²¾ç¡®åˆ°ç§’
         formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
-        # Êä³öµ±Ç°Ê±¼ä
+        # è¾“å‡ºå½“å‰æ—¶é—´
         print(formatted_time)
     def get_table_data(self,header=False):
-        # ±£´æ±à¼­ÖĞµÄÎ»ÖÃÊı¾İ
+        # ä¿å­˜ç¼–è¾‘ä¸­çš„ä½ç½®æ•°æ®
         self.save_editing_data()
-        # »ñÈ¡±í¸ñÊı¾İ
+        # è·å–è¡¨æ ¼æ•°æ®
         col_data = []
         col_title=[]
         Title_matrix = {}
@@ -356,15 +374,16 @@ class Ui_Main(Ui_GUI):
             
 
 
-        # ×ª»»ÎªpandasµÄDataFrame¸ñÊ½
+        # è½¬æ¢ä¸ºpandasçš„DataFrameæ ¼å¼
         df = pd.DataFrame(col_data).transpose()
         df.columns = col_title
         first_row = df.iloc[0:1]
         remaining_df=df.iloc[1:].dropna(how='all')
         df=pd.concat([first_row, remaining_df]).reset_index(drop=True)
 
-        # df=df.fillna('')  #Ìî³änan
+        # df=df.fillna('')  #å¡«å……nan
         return df,Title_matrix,type_matrix
+    
     def data_classification(self,list):
         date_patterns = [
             r'\d{4}-\d{2}-\d{2}',  # YYYY-MM-DD
@@ -414,7 +433,7 @@ class Ui_Main(Ui_GUI):
 
     def Time_serires_plt(self):
         from Plot_Window_Time_Series import Time_series_plot
-        # ½áÊø±à¼­×´Ì¬
+        # ç»“æŸç¼–è¾‘çŠ¶æ€
         table_data,title_matrix,type_matrix= self.get_table_data()
         pl = Time_series_plot(table_data,title_matrix,type_matrix)
         self.windows.append(pl)
@@ -431,14 +450,14 @@ class Ui_Main(Ui_GUI):
         pl = Histogram_plot(table_data,title_matrix,type_matrix)
         self.windows.append(pl)
 
-    # ParetoÍ¼½Ó¿Ú
+    # Paretoå›¾æ¥å£
     def Pareto(self):
         from Plot_interface import Ui_Plot_interface
         pareto_data = self.tableWidget.transfer_data()
         interface = Ui_Plot_interface('Pareto', pareto_data)
         interface.exec_()
 
-    # IndividualÍ¼½Ó¿Ú
+    # Individualå›¾æ¥å£
     def Indiviplt(self):
         from Plot_interface import Ui_Plot_interface
         Individual_data = self.tableWidget.transfer_data()
@@ -446,7 +465,7 @@ class Ui_Main(Ui_GUI):
         interface = Ui_Plot_interface('Individual', Individual_data)
         interface.exec_()
 
-    # BoxÍ¼½Ó¿Ú
+    # Boxå›¾æ¥å£
     def boxplt(self):
         from Plot_interface import Ui_Plot_interface
         box_data = self.tableWidget.transfer_data()
@@ -458,9 +477,9 @@ class Ui_Main(Ui_GUI):
             QMessageBox.about(MainWindow, 'Error', 'No cells selected')
             return
         selected_items = []
-        total_selected_count = 0  # Ñ¡ÖĞµÄÏîµÄ¸öÊı
-        valid_selected_count = 0  # ±»Í³¼ÆµÄÓĞĞ§Á¿µÄÊıÁ¿
-        # »ñÈ¡Ñ¡ÖĞµÄµ¥Ôª¸ñ
+        total_selected_count = 0  # é€‰ä¸­çš„é¡¹çš„ä¸ªæ•°
+        valid_selected_count = 0  # è¢«ç»Ÿè®¡çš„æœ‰æ•ˆé‡çš„æ•°é‡
+        # è·å–é€‰ä¸­çš„å•å…ƒæ ¼
         for item in self.tableWidget.selectedItems():
             total_selected_count += 1
             try:
@@ -481,7 +500,7 @@ class Ui_Main(Ui_GUI):
 
             }
         else:
-        # ¼ÆËãÍ³¼ÆÁ¿
+        # è®¡ç®—ç»Ÿè®¡é‡
             mean = np.mean(selected_items)
             max_value = np.max(selected_items)
             min_value = np.min(selected_items)
@@ -527,9 +546,9 @@ class Ui_Main(Ui_GUI):
         result_str = self.setting.text_Browser.toPlainText()
         import pyperclip
         pyperclip.copy(result_str)
-        QMessageBox.about(window, 'ÌáÊ¾', 'ÒÑ¸´ÖÆµ½¼ôÌù°å')
+        QMessageBox.about(window, 'æç¤º', 'å·²å¤åˆ¶åˆ°å‰ªè´´æ¿')
     def closeall(self):
-        # Ìí¼Ó×Ô¶¨ÒåÂß¼­
+        # æ·»åŠ è‡ªå®šä¹‰é€»è¾‘
         sys.exit()
 
 
@@ -549,7 +568,7 @@ if __name__ == "__main__":
 
         sys.exit(app.exec_())
     except Exception as e:
-        print(f"³ÌĞò³ö´í: {e}", file=sys.stderr)
-        input("°´ Enter ¼üÍË³ö...")
+        print(f"ç¨‹åºå‡ºé”™: {e}", file=sys.stderr)
+        input("æŒ‰ Enter é”®é€€å‡º...")
         sys.exit(1)
 
