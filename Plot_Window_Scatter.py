@@ -12,6 +12,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.ticker import MaxNLocator
 import pandas as pd
 import sys
+from scipy.stats import linregress
 
 
 
@@ -224,31 +225,52 @@ class Scatter_plot(general_window):
                     # 生成拟合线的y值
                     y_linear = np.polyval(coefficients_linear, x_sorted)
                     line,=ax.plot(x_sorted, y_linear, label='Linear Fit - %s' % label)
+                    '===R2计算==='
+                    y_mean = np.mean(y)
+                    tss = np.sum((y - y_mean) ** 2)  # 总平方和
+                    rss = np.sum((y - np.polyval(coefficients_linear, x)) ** 2)  # 残差平方和
+                    r2 = 1 - (rss / tss)
+                    '======'
                     linear_equation, linear_plain = self.coefficients_to_equation(coefficients_linear)
                     linear_equation=linear_equation.replace("x",x_name)
                     linear_plain = linear_plain.replace("x", x_name)
-                    formula += f'Linear Regression - {label} :    {y_name}={linear_equation}<br>'
-                    formula_plain += f'{label} - Linear: {y_name}={linear_plain}\n'
+
+                    formula += f'Linear Regression - {label} :    {y_name}={linear_equation}<br>(R² = {r2:.3f})<br>'
+                    formula_plain += f'{label} - Linear: {y_name}={linear_plain}\n(R² = {r2:.3f})\n'
+
 
                 if 2 in self.draw_list:
                     coefficients_quadratic = np.polyfit(x, y, 2)
                     y_quadratic = np.polyval(coefficients_quadratic, x_sorted)
                     line,=ax.plot(x_sorted, y_quadratic, label='Quadratic Fit- %s' % label)
                     quadratic_equation, quadratic_plain = self.coefficients_to_equation(coefficients_quadratic)
+                    '===R2计算==='
+                    y_mean = np.mean(y)
+                    tss = np.sum((y - y_mean) ** 2)  # 总平方和
+                    rss = np.sum((y - np.polyval(coefficients_quadratic, x)) ** 2)  # 残差平方和
+                    r2 = 1 - (rss / tss)
+                    '======'
+
                     quadratic_equation = quadratic_equation.replace("x", x_name)
                     quadratic_plain = quadratic_plain.replace("x", x_name)
 
-                    formula += f'Quadratic Regression - {label} :   {quadratic_equation}<br>'
-                    formula_plain += f'{label} - Quadratic: {y_name}= {quadratic_plain}\n'
+                    formula += f'Quadratic Regression - {label} :   {quadratic_equation}<br>(R² = {r2:.3f})<br>'
+                    formula_plain += f'{label} - Quadratic: {y_name}= {quadratic_plain}\n(R² = {r2:.3f})\n'
                 if 3 in self.draw_list:
                     coefficients_cubic = np.polyfit(x, y, 3)
                     y_cubic = np.polyval(coefficients_cubic, x_sorted)
                     line,=ax.plot(x_sorted, y_cubic, label='Cubic Fit - %s' % label)
                     cubic_equation, cubic_plain = self.coefficients_to_equation(coefficients_cubic)
+                    '===R2计算==='
+                    y_mean = np.mean(y)
+                    tss = np.sum((y - y_mean) ** 2)  # 总平方和
+                    rss = np.sum((y - np.polyval(coefficients_cubic, x)) ** 2)  # 残差平方和
+                    r2 = 1 - (rss / tss)
+                    '======'
                     cubic_equation=cubic_equation.replace("x", x_name)
                     cubic_plain=cubic_plain.replace("x", x_name)
-                    formula += f'Cubic Regression - {label} :   {cubic_equation}<br>'
-                    formula_plain += f'{label} - Cubic: {y_name}= {cubic_plain}\n'
+                    formula += f'Cubic Regression - {label} :   {cubic_equation}<br>(R² = {r2:.3f})<br>'
+                    formula_plain += f'{label} - Cubic: {y_name}= {cubic_plain}\n(R² = {r2:.3f})\n'
 
         ax.legend()
         # Giving title to the chart using plt.title

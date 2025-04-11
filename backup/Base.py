@@ -1,0 +1,86 @@
+#coding=gbk
+#需要定义数据文件的格式，导入导出方法
+import sys
+from tqdm import tqdm
+import time
+import numpy as np
+
+class Base:
+    def __init__(self, name, data):
+        self.name = name
+        self.data = data
+        
+    def import_data(self, file_path):
+        pass
+
+    def export_data(self, file_path):   
+        pass    
+    def get_data(self):
+        return self.data
+
+    def set_data(self, data):
+        self.data = data
+
+
+def main():
+
+
+    for i in tqdm(range(10), desc="Processing items", unit="item"):
+        time.sleep(0.1)
+
+    print("\nTask completed!")
+
+
+    return 
+if __name__ == "__main__":
+    # set to True if you want to enable tracing of the Python code
+    # traces are sent to stdout. For debugging only.
+    import sys
+    f = open('../test.log', 'a')
+    sys.stdout = f
+    sys.stderr = f
+    enable_trace = True
+    if enable_trace:
+        import trace
+        import logging
+        logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s', filename='../test.log', filemode='w',
+                            level=logging.INFO)
+
+        logging.info('info级别，一般用来打印一些正常的操作信息')
+
+        formatter = logging.Formatter('%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+        logger = logging.getLogger('test')
+        
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.INFO)
+        stream_handler.setFormatter(formatter)
+        file_handler = logging.FileHandler('../test.log')
+        file_handler.setLevel(level=logging.INFO)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
+        logger.addHandler(file_handler)
+
+
+        tracer = trace.Trace(
+            ignoredirs=[sys.prefix, sys.exec_prefix], count=True, trace=True, infile='trace_report.dat')
+
+        result = tracer.results()
+        result.write_results(summary=True)
+        # run the new command using the given tracer
+        tracer.run('main()')
+        
+
+
+        # report_tracer = trace.Trace(count=False,
+        #                     trace=False,
+        #                     infile='trace_report.txt')
+
+
+        # results = tracer.results( )
+        # # results.write_results(summary=True)
+        
+    else:
+        main()
+    
+
+    
