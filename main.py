@@ -203,6 +203,18 @@ class Ui_Main(Ui_GUI):
     def equation(self):
         from Equation import Ui_Equation
         Table_data = self.tableWidget.transfer_data()
+        line_1_title = {}
+
+        for col in range(self.WidgetColCount):
+            if self.tableWidget.item(0, col).text() != "":
+
+                line_1_title[self.tableWidget.item(0, col).text()] = "C" + str(col + 1)
+            
+
+        for key in line_1_title.keys():
+            
+            Table_data[line_1_title[key]] = Table_data.pop(key)
+        print(Table_data)        
         try:
             current_col = self.tableWidget.selectedItems()[0].column()
             # print(current_col)
@@ -228,6 +240,7 @@ class Ui_Main(Ui_GUI):
                 else:
                     print(interface.select)
                     self.Update_equation(name=interface.outputcolumn, result=interface.result, row=interface.row_num)
+
         except BaseException as e:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
@@ -252,13 +265,20 @@ class Ui_Main(Ui_GUI):
         self.reset_col_row_name()
         self.adjust_column_width()
 
+
     def SaveToExcel(self):
+        # 尝试保存数据到Excel文件
         try:
+            # 获取表格数据
             df = self.get_table_data()[0]
+            # 打印数据
             print(df)
+            # 弹出文件夹选择对话框
             folder_path = filedialog.askdirectory()
+            # 将数据保存到Excel文件
             df.to_excel(f"{folder_path}/Saved_data.xlsx", index=False)
         except BaseException as e:
+            # 如果出现异常，弹出错误对话框
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.setWindowTitle("Error")
             error_dialog.showMessage(str(e))
@@ -342,6 +362,7 @@ class Ui_Main(Ui_GUI):
         df.columns = col_title
         # df=df.fillna('')  #填充nan
         return df,Title_matrix,type_matrix
+    
     def data_classification(self,list):
         date_patterns = [
             r'\d{4}-\d{2}-\d{2}',  # YYYY-MM-DD
